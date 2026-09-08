@@ -1,0 +1,121 @@
+@charset "utf-8";
+/* 독립 화면(레이아웃 밖)이라 웹폰트를 직접 불러온다 */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+/* 신선한 테마 시스템 메시지 스킨 — 레이아웃 밖에서도 스스로 완결되게 스타일링한다 */
+:root {
+	--zm-brand: #1f6b4a;
+	--zm-brand-hover: #17513a;
+	--zm-brand-soft: rgba(31, 107, 74, .09);
+	--zm-text: #16201b;
+	--zm-text-sub: #4c5a52;
+	--zm-border: #e4e6e0;
+	--zm-bg: #ffffff;
+	--zm-surface: #fbfaf6;
+}
+
+body, #access table, #access input, #access textarea, #access select, #access button, #access label {
+	font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+		'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+	font-size: 14px;
+}
+body { background: var(--zm-surface); }
+
+#access {
+	width: min(440px, calc(100% - 32px));
+	margin: 8vh auto 40px;
+	background: var(--zm-bg);
+	border: 1px solid var(--zm-border);
+	border-radius: 16px;
+	box-shadow: 0 18px 40px -24px rgba(22, 32, 27, .3);
+	box-sizing: border-box;
+	overflow: hidden;
+}
+#access > .login-header { padding: 22px 24px 0; border-bottom: 0; }
+#access > .login-header > h1 { margin: 0; font-size: 20px; line-height: 1.4; font-weight: 800; letter-spacing: -.02em; color: var(--zm-text); }
+#access > .login-header > h1 > i { display: none; }
+#access > .login-body { max-height: none; padding: 16px 24px 22px; color: var(--zm-text-sub); }
+#access > .login-body > *:first-child { margin-top: 0; }
+#access > .login-footer {
+	padding: 14px 24px;
+	margin-bottom: 0;
+	text-align: right;
+	background: var(--zm-surface);
+	border-top: 1px solid var(--zm-border);
+	border-radius: 0 0 16px 16px;
+	box-shadow: none;
+	color: var(--zm-text-sub);
+	*zoom: 1;
+}
+#access > .login-footer:before,
+#access > .login-footer:after { display: table; line-height: 0; content: ""; clear: both; }
+
+#access .control-group { position: relative; padding: 0; margin: 0 0 12px; clear: both; }
+#access .control-group.captcha { margin-bottom: 10px; }
+#access .message { padding: 12px 14px; margin: 0 0 14px; border: 1px solid var(--zm-border); border-radius: 10px; background: var(--zm-surface); color: var(--zm-text); line-height: 1.6; }
+#access .message.error { border-color: rgba(194, 87, 30, .35); background: rgba(194, 87, 30, .06); color: #a34715; }
+#access .message.info { border-color: rgba(31, 107, 74, .35); background: var(--zm-brand-soft); color: var(--zm-brand); }
+#access .message.location { word-break: break-all; }
+
+#access form { margin: 0; }
+#access fieldset { margin: 0; border: 0; padding: 0; }
+#access label { cursor: pointer; display: inline-block; color: var(--zm-text-sub); }
+#access input[type="text"],
+#access input[type="email"],
+#access input[type="password"] {
+	width: 100%;
+	box-sizing: border-box;
+	height: 46px;
+	padding: 0 14px;
+	margin-bottom: 8px;
+	border: 1px solid var(--zm-border);
+	border-radius: 10px;
+	background: var(--zm-bg);
+	color: var(--zm-text);
+	font-family: inherit;
+	font-size: 14.5px;
+}
+#access input[type="text"]:focus,
+#access input[type="email"]:focus,
+#access input[type="password"]:focus { outline: 0; border-color: var(--zm-brand); box-shadow: 0 0 0 3px var(--zm-brand-soft); }
+#access input[type="checkbox"] { margin: 0 4px 0 0; accent-color: var(--zm-brand); }
+
+#access .btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 42px;
+	padding: 0 20px;
+	border: 1px solid var(--zm-border);
+	border-radius: 10px;
+	background: var(--zm-bg);
+	color: var(--zm-text-sub);
+	font-family: inherit;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	text-decoration: none;
+	cursor: pointer;
+	transition: border-color .15s, color .15s, background-color .15s;
+}
+#access .btn:hover { border-color: var(--zm-brand); color: var(--zm-brand); }
+#access .btn.btn-inverse,
+#access input[type="submit"].btn,
+#access .submit {
+	background: var(--zm-brand);
+	border-color: var(--zm-brand);
+	color: #fff;
+	font-weight: 700;
+}
+#access .btn.btn-inverse:hover,
+#access input[type="submit"].btn:hover,
+#access .submit:hover { background: var(--zm-brand-hover); border-color: var(--zm-brand-hover); color: #fff; }
+#access .submit { position: static; width: 100%; margin-top: 4px; }
+
+#access p { margin: 10px 0; line-height: 1.65; }
+#access #warning { margin-right: 0; font-size: 12.5px; color: var(--zm-text-sub); }
+#access a { color: var(--zm-brand); text-decoration: none; font-weight: 600; }
+#access a:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+@media all and (max-width: 480px) {
+	#access { margin-top: 24px; }
+}

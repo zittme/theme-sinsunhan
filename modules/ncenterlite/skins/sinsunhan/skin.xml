@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skin version="0.2">
+	<title xml:lang="ko">신선한</title>
+	<title xml:lang="en">Sinsunhan</title>
+	<description xml:lang="ko">신선한 테마의 알림센터 스킨입니다. 헤더 알림 벨과 알림 목록을 테마 디자인에 맞췄습니다.</description>
+	<description xml:lang="en">Notification center skin of the Sinsunhan theme, styling the header bell and notification list.</description>
+	<version>1.0.0</version>
+	<date>2026-09-04</date>
+
+	<author email_address="info@xemagazine.com" link="http://xmz.kr/">
+		<name xml:lang="ko">XE Public</name>
+		<name xml:lang="en">XE Public</name>
+	</author>
+
+	<colorset>
+		<color name="black">
+			<title xml:lang="ko">검은색</title>
+			<title xml:lang="en">Black</title>
+			</color>
+		<color name="gray">
+			<title xml:lang="ko">회색</title>
+			<title xml:lang="en">Gray</title>
+			</color>
+		<color name="white">
+			<title xml:lang="ko">흰색</title>
+			<title xml:lang="en">White</title>
+			</color>
+
+		<color name="blacknoprofile">
+			<title xml:lang="ko">검은색(no profile)</title>
+			<title xml:lang="en">Black (no profile)</title>
+			</color>
+		<color name="graynoprofile">
+			<title xml:lang="ko">회색(no profile)</title>
+			<title xml:lang="en">Gray (no profile)</title>
+			</color>
+		<color name="whitenoprofile">
+			<title xml:lang="ko">흰색(no profile)</title>
+			<title xml:lang="en">White (no profile)</title>
+			</color>
+	</colorset>
+</skin>

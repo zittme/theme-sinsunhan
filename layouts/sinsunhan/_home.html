@@ -1,0 +1,537 @@
+@version(2)
+{{-- 테마 내장 메인페이지 — 대문(메인 형태)에서 상품·게시글·카테고리 섹션을 렌더링한다. --}}
+{{-- 레이아웃 설정의 "메인 구성" 반복 필드로 조립하고, 비워두면 기본 구성을 쓴다. --}}
+@php
+// 커머스 스킨 공용 헬퍼(가격 표기)는 커머스 컨트롤러가 로드한다.
+// 대문은 다른 모듈이므로 여기서 직접 불러 둔다. 커머스 미설치면 그냥 넘어간다.
+if (!function_exists('shop_item_price'))
+{
+	$hr_helper_file = \RX_BASEDIR . 'modules/commerce/helpers.php';
+	if (is_file($hr_helper_file)) { require_once $hr_helper_file; }
+}
+
+if (!function_exists('hr_home_price'))
+{
+	// 상품 가격 한 줄 표기: 헬퍼가 있으면 통화 규칙을 따르고, 없으면 숫자만 찍는다
+	function hr_home_price($hr_amount)
+	{
+		if (function_exists('shop_money'))
+		{
+			return shop_money((int)$hr_amount);
+		}
+		return number_format((int)$hr_amount);
+	}
+}
+if (!function_exists('hrh_flat_text'))
+{
+	// 배너 문구를 한 줄 텍스트로: 줄바꿈 태그를 공백으로 풀고 태그를 걷어낸다
+	// (@php 문자열에 꺾쇠를 직접 쓰면 템플릿 컴파일이 깨지므로 chr 로 만든다)
+	function hrh_flat_text($hrh_t)
+	{
+		$hrh_lt = chr(60);
+		$hrh_gt = chr(62);
+		$hrh_t = preg_replace('/' . $hrh_lt . 'br[^' . $hrh_gt . ']*' . $hrh_gt . '/i', ' ', (string)$hrh_t);
+		return trim(strip_tags($hrh_t));
+	}
+}
+if (!function_exists('hr_home_cmp_off'))
+{
+	// 할인율 큰 순서
+	function hr_home_cmp_off($hrh_a, $hrh_b)
+	{
+		$hrh_ap = (int)($hrh_a->price ?? 0);
+		$hrh_bp = (int)($hrh_b->price ?? 0);
+		$hrh_ao = $hrh_ap > 0 ? ($hrh_ap - (int)($hrh_a->sale_price ?? 0)) / $hrh_ap : 0;
+		$hrh_bo = $hrh_bp > 0 ? ($hrh_bp - (int)($hrh_b->sale_price ?? 0)) / $hrh_bp : 0;
+		if ($hrh_ao === $hrh_bo) { return 0; }
+		return $hrh_ao < $hrh_bo ? 1 : -1;
+	}
+}
+if (!function_exists('hr_home_cmp_rank'))
+{
+	// 랭킹: 구매수 → 조회수 → 최신 순
+	function hr_home_cmp_rank($hrh_a, $hrh_b)
+	{
+		$hrh_av = (int)($hrh_a->buy_count ?? 0);
+		$hrh_bv = (int)($hrh_b->buy_count ?? 0);
+		if ($hrh_av !== $hrh_bv) { return $hrh_av < $hrh_bv ? 1 : -1; }
+		$hrh_av = (int)($hrh_a->view_count ?? 0);
+		$hrh_bv = (int)($hrh_b->view_count ?? 0);
+		if ($hrh_av !== $hrh_bv) { return $hrh_av < $hrh_bv ? 1 : -1; }
+		return (int)$hrh_a->item_srl < (int)$hrh_b->item_srl ? 1 : -1;
+	}
+}
+if (!function_exists('hr_home_cmp_buy'))
+{
+	function hr_home_cmp_buy($hr_a, $hr_b)
+	{
+		$hr_av = (int)($hr_a->buy_count ?? 0);
+		$hr_bv = (int)($hr_b->buy_count ?? 0);
+		if ($hr_av === $hr_bv) { return 0; }
+		return $hr_av < $hr_bv ? 1 : -1;
+	}
+}
+
+// 상점 mid — 헤더와 같은 규칙 (설정값 우선, 없으면 첫 커머스 모듈)
+$hrh_shop_mid = trim((string)($hr->shop_mid ?? ''));
+if ($hrh_shop_mid === '')
+{
+	foreach (ModuleModel::getMidList((object)['module' => 'commerce'], ['mid']) ?: [] as $hrh_row)
+	{
+		$hrh_shop_mid = (string)($hrh_row->mid ?? '');
+		break;
+	}
+}
+
+// 섹션 구성 — 설정이 비어 있으면 기본 구성
+$hrh_sections = [];
+foreach (array_values((array)($hr->home_sections ?? [])) as $hrh_srow)
+{
+	$hrh_srow = (array)$hrh_srow;
+	if (empty($hrh_srow['stype'])) { continue; }
+	$hrh_sections[] = [
+		'stype' => (string)$hrh_srow['stype'],
+		'title' => trim((string)($hrh_srow['title'] ?? '')),
+		'source' => trim((string)($hrh_srow['source'] ?? '')),
+		'count' => max(2, min(12, (int)($hrh_srow['count'] ?? 8))),
+	];
+}
+if (!count($hrh_sections))
+{
+	$hrh_sections = [
+		['stype' => 'categories', 'title' => '', 'source' => '', 'count' => 10],
+		['stype' => 'daily', 'title' => '', 'source' => '', 'count' => 1],
+		['stype' => 'promos', 'title' => '', 'source' => '', 'count' => 4],
+		['stype' => 'items_recommend', 'title' => '', 'source' => '', 'count' => 8],
+		['stype' => 'banner', 'title' => '', 'source' => '2', 'count' => 1],
+		['stype' => 'ranking', 'title' => '', 'source' => '', 'count' => 6],
+		['stype' => 'items_new', 'title' => '', 'source' => '', 'count' => 8],
+		['stype' => 'banner', 'title' => '', 'source' => '3', 'count' => 1],
+		['stype' => 'items_sale', 'title' => '', 'source' => '', 'count' => 8],
+		['stype' => 'posts', 'title' => '', 'source' => 'notice,board', 'count' => 6],
+	];
+}
+
+// 중간 배너 스트립 재료 — 레이아웃 비주얼(커머스 배너 승계 포함)을 그대로 쓴다
+$hrh_banners = [];
+foreach ((is_array($hr_visuals ?? null) ? $hr_visuals : []) as $hrh_bv)
+{
+	$hrh_bv = (array)$hrh_bv;
+	if (!empty($hrh_bv['image'])) { $hrh_banners[] = $hrh_bv; }
+}
+
+// 상품 풀 — 상품 섹션이 하나라도 있으면 한 번만 조회
+$hrh_pool = [];
+$hrh_need_items = false;
+foreach ($hrh_sections as $hrh_sec)
+{
+	if (strpos($hrh_sec['stype'], 'items_') === 0 || $hrh_sec['stype'] === 'daily' || $hrh_sec['stype'] === 'ranking') { $hrh_need_items = true; }
+}
+if ($hrh_need_items && $hrh_shop_mid !== '')
+{
+	$hrh_out = executeQuery('commerce.getItemList', (object)[
+		'status_list' => 'sale,soldout',
+		'sort_index' => 'item_srl',
+		'order_type' => 'desc',
+		'list_count' => 120,
+	]);
+	if ($hrh_out->toBool() && !empty($hrh_out->data))
+	{
+		$hrh_rows = is_array($hrh_out->data) ? $hrh_out->data : [$hrh_out->data];
+		$hrh_now = date('YmdHis');
+		foreach ($hrh_rows as $hrh_it)
+		{
+			if (empty($hrh_it->item_srl)) { continue; }
+			if (!empty($hrh_it->sale_start) && $hrh_now < $hrh_it->sale_start) { continue; }
+			if (!empty($hrh_it->sale_end) && $hrh_now > $hrh_it->sale_end) { continue; }
+			$hrh_it->item_name = \Context::replaceUserLang((string)$hrh_it->item_name);
+			$hrh_pool[] = $hrh_it;
+		}
+	}
+}
+
+// 카테고리 — 카테고리 섹션이 있을 때만
+$hrh_cats = [];
+foreach ($hrh_sections as $hrh_sec)
+{
+	if ($hrh_sec['stype'] !== 'categories') { continue; }
+	$hrh_cout = executeQuery('commerce.getCategoryList', (object)['is_active' => 'Y']);
+	if ($hrh_cout->toBool() && !empty($hrh_cout->data))
+	{
+		foreach ((is_array($hrh_cout->data) ? $hrh_cout->data : [$hrh_cout->data]) as $hrh_cat)
+		{
+			if (empty($hrh_cat->category_srl) || (int)($hrh_cat->parent_srl ?? 0) !== 0) { continue; }
+			$hrh_cat->title = \Context::replaceUserLang((string)$hrh_cat->title);
+			$hrh_cats[] = $hrh_cat;
+		}
+	}
+	break;
+}
+
+// 게시판 최신 글 — posts 섹션마다 조회 (source 에 게시판 mid, 비우면 첫 게시판)
+if (!function_exists('hr_home_posts'))
+{
+	function hr_home_posts($hrh_mid, $hrh_count)
+	{
+		if ($hrh_mid === '')
+		{
+			foreach (ModuleModel::getMidList((object)['module' => 'board'], ['mid']) ?: [] as $hrh_brow)
+			{
+				$hrh_mid = (string)($hrh_brow->mid ?? '');
+				break;
+			}
+		}
+		if ($hrh_mid === '') { return ['mid' => '', 'rows' => []]; }
+		$hrh_binfo = ModuleModel::getModuleInfoByMid($hrh_mid);
+		if (!is_object($hrh_binfo) || empty($hrh_binfo->module_srl)) { return ['mid' => $hrh_mid, 'rows' => []]; }
+		$hrh_dargs = new stdClass;
+		$hrh_dargs->module_srl = (int)$hrh_binfo->module_srl;
+		$hrh_dargs->list_count = $hrh_count;
+		$hrh_dargs->sort_index = 'list_order';
+		$hrh_dargs->order_type = 'asc';
+		$hrh_dargs->statusList = ['PUBLIC'];
+		$hrh_dmodel = getModel('document');
+		$hrh_dout = $hrh_dmodel->getDocumentList($hrh_dargs);
+		$hrh_rows = [];
+		foreach ((array)($hrh_dout->data ?? []) as $hrh_doc)
+		{
+			$hrh_rows[] = $hrh_doc;
+		}
+		// 게시판 스킨 설정의 제목(hr_board_title)은 module_info 에 합쳐지지 않으므로 직접 읽는다
+		$hrh_skin_vars = ModuleModel::getModuleSkinVars((int)$hrh_binfo->module_srl);
+		$hrh_skin_title = '';
+		if (is_array($hrh_skin_vars) && isset($hrh_skin_vars['hr_board_title']))
+		{
+			$hrh_sv = $hrh_skin_vars['hr_board_title'];
+			$hrh_skin_title = is_object($hrh_sv) ? (string)($hrh_sv->value ?? '') : (string)$hrh_sv;
+		}
+		$hrh_title = trim($hrh_skin_title);
+		if ($hrh_title === '') { $hrh_title = (string)($hrh_binfo->board_title ?? ''); }
+		if ($hrh_title === '') { $hrh_title = (string)($hrh_binfo->browser_title ?? $hrh_mid); }
+		return ['mid' => $hrh_mid, 'rows' => $hrh_rows, 'board_title' => \Context::replaceUserLang($hrh_title)];
+	}
+}
+@endphp
+
+<div class="ssh-home">
+	@foreach ($hrh_sections as $hrh_sec)
+	@php
+	$hrh_stype = $hrh_sec['stype'];
+	$hrh_items = [];
+	$hrh_more_url = '';
+	$hrh_title = $hrh_sec['title'];
+	if ($hrh_stype === 'items_recommend' || $hrh_stype === 'items_new' || $hrh_stype === 'items_sale' || $hrh_stype === 'items_popular')
+	{
+		foreach ($hrh_pool as $hrh_it)
+		{
+			if ($hrh_stype === 'items_recommend' && ($hrh_it->is_recommend ?? 'N') !== 'Y') { continue; }
+			if ($hrh_stype === 'items_new' && ($hrh_it->is_new ?? 'N') !== 'Y') { continue; }
+			if ($hrh_stype === 'items_sale' && !((int)($hrh_it->sale_price ?? 0) > 0 && (int)$hrh_it->sale_price < (int)$hrh_it->price)) { continue; }
+			$hrh_items[] = $hrh_it;
+		}
+		if ($hrh_stype === 'items_popular')
+		{
+			usort($hrh_items, 'hr_home_cmp_buy');
+		}
+		$hrh_items = array_slice($hrh_items, 0, $hrh_sec['count']);
+		$hrh_filter_map = ['items_recommend' => 'recommend', 'items_new' => 'new', 'items_sale' => 'sale', 'items_popular' => 'popular'];
+		$hrh_more_url = $hrh_shop_mid !== '' ? getUrl('', 'mid', $hrh_shop_mid, 'v', 'list', 'f', $hrh_filter_map[$hrh_stype]) : '';
+		if ($hrh_title === '')
+		{
+			$hrh_title_map = ['items_recommend' => $lang->ssh_sec_recommend, 'items_new' => $lang->ssh_sec_new, 'items_sale' => $lang->ssh_sec_sale, 'items_popular' => $lang->ssh_sec_popular];
+			$hrh_title = $hrh_title_map[$hrh_stype];
+		}
+	}
+	@endphp
+
+	@if ($hrh_stype === 'categories' && count($hrh_cats))
+	@php
+	// 레이아웃 설정 "카테고리 아이콘": 카테고리 이름이 일치하면 이미지 또는 이모지/글자를 첫 음절 대신 쓴다.
+	// (영어·스페인어처럼 첫 글자가 구분이 안 되는 언어를 위한 것. 설정이 없으면 첫 음절.)
+	$hrh_icon_map = [];
+	foreach (array_values((array)($layout_info->cat_icons ?? [])) as $hrh_ic)
+	{
+		$hrh_ic = (array)$hrh_ic;
+		$hrh_ic_key = trim((string)($hrh_ic['cat_title'] ?? ''));
+		if ($hrh_ic_key !== '')
+		{
+			$hrh_icon_map[$hrh_ic_key] = $hrh_ic;
+		}
+	}
+	@endphp
+	<nav class="ssh-tiles" aria-label="{{ $lang->ssh_sec_categories }}">
+		@foreach (array_slice($hrh_cats, 0, $hrh_sec['count']) as $hrh_cat)
+		@php $hrh_ic = $hrh_icon_map[trim((string)$hrh_cat->title)] ?? null; @endphp
+		<a href="{{ getUrl('', 'mid', $hrh_shop_mid, 'v', 'list', 'category', $hrh_cat->category_srl) }}">
+			@if (!empty($hrh_ic['icon_image']))
+			<span class="ssh-tile-mark has-img"><img src="{{ $hrh_ic['icon_image'] }}" alt="" loading="lazy" /></span>
+			@elseif (!empty($hrh_ic['icon_text']))
+			<span class="ssh-tile-mark">{{ trim((string)$hrh_ic['icon_text']) }}</span>
+			@else
+			<span class="ssh-tile-mark">{{ mb_substr(trim((string)$hrh_cat->title), 0, 1) }}</span>
+			@endif
+			<span class="ssh-tile-name">{{ $hrh_cat->title }}</span>
+		</a>
+		@endforeach
+		@if ($hrh_shop_mid !== '')
+		<a class="ssh-tile-all" href="{{ getUrl('', 'mid', $hrh_shop_mid, 'v', 'list') }}">
+			<span class="ssh-tile-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z"/></svg></span>
+			<span class="ssh-tile-name">{{ $lang->ssh_all_items }}</span>
+		</a>
+		@endif
+	</nav>
+	@endif
+
+	@if ($hrh_stype === 'banner' && count($hrh_banners))
+	@php
+	// source 에 몇 번째 배너인지 적는다 (1부터). 비우거나 범위를 벗어나면 차례대로 돌려 쓴다
+	$hrh_bidx = (int)$hrh_sec['source'];
+	if ($hrh_bidx < 1 || $hrh_bidx > count($hrh_banners))
+	{
+		$hrh_bseq = isset($hrh_bseq) ? $hrh_bseq + 1 : 0;
+		$hrh_bidx = ($hrh_bseq % count($hrh_banners)) + 1;
+	}
+	$hrh_bn = $hrh_banners[$hrh_bidx - 1];
+	$hrh_bn_url = trim((string)($hrh_bn['link_url'] ?? ''));
+	if ($hrh_bn_url === '' && $hrh_shop_mid !== '') { $hrh_bn_url = getUrl('', 'mid', $hrh_shop_mid, 'v', 'list'); }
+	@endphp
+	<a class="ssh-strip" href="{{ $hrh_bn_url }}" style="background-image:url('{{ escape($hrh_bn['image']) }}')">
+		<span class="ssh-strip-copy">
+			@if (!empty($hrh_bn['title']))<strong>{{ hrh_flat_text($hrh_bn['title']) }}</strong>@endif
+			@if (!empty($hrh_bn['text']))<span>{{ hrh_flat_text($hrh_bn['text']) }}</span>@endif
+		</span>
+	</a>
+	@endif
+
+	@if ($hrh_stype === 'daily')
+	@php
+	// 일일특가 — 할인 상품 중 할인율이 큰 순으로 줄 세우고, 날짜에 따라 하루에 하나씩 돌아간다
+	$hrh_deals = [];
+	foreach ($hrh_pool as $hrh_it)
+	{
+		$hrh_dp = (int)($hrh_it->price ?? 0);
+		$hrh_ds = (int)($hrh_it->sale_price ?? 0);
+		if ($hrh_ds > 0 && $hrh_ds < $hrh_dp && ($hrh_it->status ?? '') === 'sale') { $hrh_deals[] = $hrh_it; }
+	}
+	usort($hrh_deals, 'hr_home_cmp_off');
+	$hrh_deal = count($hrh_deals) ? $hrh_deals[(int)date('z') % min(8, count($hrh_deals))] : null;
+	@endphp
+	@if ($hrh_deal)
+	@php
+	$hrh_dp = (int)$hrh_deal->price;
+	$hrh_ds = (int)$hrh_deal->sale_price;
+	$hrh_doff = (int)round(($hrh_dp - $hrh_ds) / $hrh_dp * 100);
+	@endphp
+	<section class="ssh-daily">
+		<div class="ssh-daily-copy">
+			<em class="ssh-daily-flag">{{ $hrh_title !== '' ? $hrh_title : $lang->ssh_daily_title }}</em>
+			<h2>{{ $lang->ssh_daily_head }}</h2>
+			<p>{{ $lang->ssh_daily_sub }}</p>
+			<div class="ssh-daily-timer" id="sshDailyTimer" role="timer">--:--:--</div>
+		</div>
+		<a class="ssh-daily-item" href="{{ getUrl('', 'mid', $hrh_shop_mid, 'act', 'dispCommerceItem', 'item_srl', $hrh_deal->item_srl) }}">
+			<span class="ssh-daily-thumb" @if (!empty($hrh_deal->thumb)) style="background-image:url('{{ escape($hrh_deal->thumb) }}')" @endif></span>
+			<span class="ssh-daily-body">
+				<span class="ssh-card-name">{{ $hrh_deal->item_name }}</span>
+				<span class="ssh-card-price">
+					<em class="ssh-off">{{ $hrh_doff }}%</em>
+					<strong>{{ hr_home_price($hrh_ds) }}</strong>
+				</span>
+				<s class="ssh-card-was">{{ hr_home_price($hrh_dp) }}</s>
+			</span>
+		</a>
+	</section>
+	<script>
+	(function () {
+		var el = document.getElementById('sshDailyTimer');
+		if (!el) return;
+		function tick() {
+			var now = new Date();
+			var end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+			var s = Math.max(0, Math.floor((end - now) / 1000));
+			var h = String(Math.floor(s / 3600)).padStart(2, '0');
+			var m = String(Math.floor(s % 3600 / 60)).padStart(2, '0');
+			var ss = String(s % 60).padStart(2, '0');
+			el.textContent = h + ':' + m + ':' + ss;
+		}
+		tick();
+		setInterval(tick, 1000);
+	})();
+	</script>
+	@endif
+	@endif
+
+	@if ($hrh_stype === 'promos')
+	@php
+	// 진행 중 기획전 카드 — 커머스 프로모션 모델에서 직접 당겨온다
+	$hrh_promos = [];
+	if (class_exists('\\Zittme\\Modules\\Commerce\\Models\\Promotion'))
+	{
+		foreach (\Zittme\Modules\Commerce\Models\Promotion::activeList() as $hrh_pm)
+		{
+			$hrh_pm->banner_data = \Zittme\Modules\Commerce\Models\Promotion::bannerOf($hrh_pm);
+			$hrh_pm->item_count = count(\Zittme\Modules\Commerce\Models\Promotion::itemSrlsOf((int)$hrh_pm->promo_srl));
+			$hrh_promos[] = $hrh_pm;
+		}
+		$hrh_promos = array_slice($hrh_promos, 0, max(2, $hrh_sec['count']));
+	}
+	@endphp
+	@if (count($hrh_promos))
+	<section class="ssh-section">
+		<div class="ssh-section-head">
+			@if ($hrh_shop_mid !== '')
+			<h2><a href="{{ getUrl('', 'mid', $hrh_shop_mid) }}">{{ $hrh_title !== '' ? $hrh_title : $lang->ssh_sec_promos }}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7-1.4-1.4L13.2 12 7.6 6.4z"/></svg></a></h2>
+			@else
+			<h2>{{ $hrh_title !== '' ? $hrh_title : $lang->ssh_sec_promos }}</h2>
+			@endif
+		</div>
+		<div class="ssh-promo-grid">
+			@foreach ($hrh_promos as $hrh_pm)
+			@php
+			$hrh_bn = (array)$hrh_pm->banner_data;
+			$hrh_bn_img = strpos((string)($hrh_bn['bg_style'] ?? ''), 'background-image') !== false;
+			$hrh_bn_left = ($hrh_bn['point_align'] ?? 'right') === 'left';
+			@endphp
+			<a class="ssh-promo-card {{ $hrh_bn_img ? 'has-image' : '' }} {{ $hrh_bn_left ? 'point-left' : '' }}" href="{{ getUrl('', 'mid', $hrh_shop_mid, 'v', 'promo', 'p', $hrh_pm->slug) }}" style="{{ $hrh_bn['bg_style'] ?? '' }}">
+				<span class="ssh-promo-copy {{ ($hrh_bn['shadow'] ?? 'Y') === 'N' ? 'no-shadow' : '' }}" style="color:{{ $hrh_bn['text_color'] ?? '#ffffff' }}">
+					<strong>{{ hrh_flat_text($hrh_pm->title) }}</strong>
+					@if (!empty($hrh_bn['text']))<span>{{ hrh_flat_text($hrh_bn['text']) }}</span>@endif
+					<em>{{ sprintf($lang->ssh_promo_count, (int)$hrh_pm->item_count) }}</em>
+				</span>
+				@if (!empty($hrh_bn['point_image']))
+				<span class="ssh-promo-point {{ $hrh_bn_left ? 'is-left' : '' }}" style="background-image:url('{{ escape($hrh_bn['point_image']) }}')"></span>
+				@endif
+			</a>
+			@endforeach
+		</div>
+	</section>
+	@endif
+	@endif
+
+	@if ($hrh_stype === 'ranking')
+	@php
+	// 실시간 인기 랭킹 — 구매수, 그다음 조회수 순
+	$hrh_rank = $hrh_pool;
+	usort($hrh_rank, 'hr_home_cmp_rank');
+	$hrh_rank = array_slice($hrh_rank, 0, max(3, $hrh_sec['count']));
+	@endphp
+	@if (count($hrh_rank))
+	<section class="ssh-section">
+		<div class="ssh-section-head">
+			<h2>{{ $hrh_title !== '' ? $hrh_title : $lang->ssh_sec_ranking }}</h2>
+		</div>
+		<ol class="ssh-rank-grid">
+			@foreach ($hrh_rank as $hrh_ri => $hrh_it)
+			@php
+			$hrh_price = (int)($hrh_it->price ?? 0);
+			$hrh_sale = (int)($hrh_it->sale_price ?? 0);
+			$hrh_on_sale = $hrh_sale > 0 && $hrh_sale < $hrh_price;
+			$hrh_off = ($hrh_on_sale && $hrh_price > 0) ? (int)round(($hrh_price - $hrh_sale) / $hrh_price * 100) : 0;
+			@endphp
+			<li>
+				<a class="ssh-rank-item" href="{{ getUrl('', 'mid', $hrh_shop_mid, 'act', 'dispCommerceItem', 'item_srl', $hrh_it->item_srl) }}">
+					<span class="ssh-rank-no">{{ $hrh_ri + 1 }}</span>
+					<span class="ssh-rank-thumb" @if (!empty($hrh_it->thumb)) style="background-image:url('{{ escape($hrh_it->thumb) }}')" @endif></span>
+					<span class="ssh-rank-body">
+						<span class="ssh-card-name">{{ $hrh_it->item_name }}</span>
+						<span class="ssh-card-price">
+							@if ($hrh_on_sale)<em class="ssh-off">{{ $hrh_off }}%</em><strong>{{ hr_home_price($hrh_sale) }}</strong>
+							@else<strong>{{ hr_home_price($hrh_price) }}</strong>@endif
+						</span>
+					</span>
+				</a>
+			</li>
+			@endforeach
+		</ol>
+	</section>
+	@endif
+	@endif
+
+	@if (strpos($hrh_stype, 'items_') === 0 && count($hrh_items))
+	<section class="ssh-section">
+		<div class="ssh-section-head">
+			@if ($hrh_more_url !== '')
+			<h2><a href="{{ $hrh_more_url }}">{{ $hrh_title }}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7-1.4-1.4L13.2 12 7.6 6.4z"/></svg></a></h2>
+			@else
+			<h2>{{ $hrh_title }}</h2>
+			@endif
+		</div>
+		<div class="ssh-grid">
+			@foreach ($hrh_items as $hrh_it)
+			@php
+			$hrh_price = (int)($hrh_it->price ?? 0);
+			$hrh_sale = (int)($hrh_it->sale_price ?? 0);
+			$hrh_on_sale = $hrh_sale > 0 && $hrh_sale < $hrh_price;
+			$hrh_off = ($hrh_on_sale && $hrh_price > 0) ? (int)round(($hrh_price - $hrh_sale) / $hrh_price * 100) : 0;
+			@endphp
+			<a class="ssh-card" href="{{ getUrl('', 'mid', $hrh_shop_mid, 'act', 'dispCommerceItem', 'item_srl', $hrh_it->item_srl) }}">
+				<span class="ssh-card-thumb" @if (!empty($hrh_it->thumb)) style="background-image:url('{{ escape($hrh_it->thumb) }}')" @endif>
+					@if (($hrh_it->status ?? '') === 'soldout')<span class="ssh-soldout">{{ $lang->ssh_soldout }}</span>@endif
+					<span class="ssh-card-badges">
+						@if (($hrh_it->is_recommend ?? 'N') === 'Y')<em class="ssh-badge">{{ $lang->ssh_badge_recommend }}</em>@endif
+						@if (($hrh_it->is_new ?? 'N') === 'Y')<em class="ssh-badge is-new">NEW</em>@endif
+					</span>
+				</span>
+				<span class="ssh-card-cartbar">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h15l-1.7 8.4a2 2 0 0 1-2 1.6H9.6a2 2 0 0 1-2-1.6L5.5 3.5H2.5v-2h4.6L8 6zm2 12a2 2 0 1 1-2 2 2 2 0 0 1 2-2zm10 0a2 2 0 1 1-2 2 2 2 0 0 1 2-2z"/></svg>
+					{{ $lang->ssh_add_cart }}
+				</span>
+				<span class="ssh-card-body">
+					<span class="ssh-card-name">{{ $hrh_it->item_name }}</span>
+					<span class="ssh-card-price">
+						@if ($hrh_on_sale)
+						<em class="ssh-off">{{ $hrh_off }}%</em>
+						<strong>{{ hr_home_price($hrh_sale) }}</strong>
+						@else
+						<strong>{{ hr_home_price($hrh_price) }}</strong>
+						@endif
+					</span>
+					@if ($hrh_on_sale)<s class="ssh-card-was">{{ hr_home_price($hrh_price) }}</s>@endif
+				</span>
+			</a>
+			@endforeach
+		</div>
+	</section>
+	@endif
+
+	@if ($hrh_stype === 'posts')
+	@php
+	// source 에 게시판 mid 를 쉼표로 여러 개 적으면 나란히 여러 단으로 보여준다 (예: notice,board)
+	$hrh_post_mids = array_values(array_filter(array_map('trim', explode(',', (string)$hrh_sec['source'])), 'strlen'));
+	if (!count($hrh_post_mids)) { $hrh_post_mids = ['']; }
+	$hrh_post_cols = [];
+	foreach ($hrh_post_mids as $hrh_pm)
+	{
+		$hrh_pcol = hr_home_posts($hrh_pm, $hrh_sec['count']);
+		if (count($hrh_pcol['rows'])) { $hrh_post_cols[] = $hrh_pcol; }
+	}
+	@endphp
+	@if (count($hrh_post_cols))
+	<section class="ssh-section ssh-posts">
+		<div class="ssh-posts-grid cols-{{ count($hrh_post_cols) }}">
+			@foreach ($hrh_post_cols as $hrh_posts)
+			<div class="ssh-posts-col">
+				<div class="ssh-posts-head">
+					<h3>{{ $hrh_posts['board_title'] ?? $lang->ssh_sec_posts }}</h3>
+					<a href="{{ getUrl('', 'mid', $hrh_posts['mid']) }}">{{ $lang->ssh_view_all }}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7-1.4-1.4L13.2 12 7.6 6.4z"/></svg></a>
+				</div>
+				<ul class="ssh-post-list">
+					@foreach ($hrh_posts['rows'] as $hrh_doc)
+					<li>
+						<a href="{{ getUrl('', 'mid', $hrh_posts['mid'], 'document_srl', $hrh_doc->document_srl) }}">
+							<span class="ssh-post-title">{{ $hrh_doc->getTitleText() }}</span>
+							@if ((int)$hrh_doc->getCommentCount() > 0)<em class="ssh-post-cmt">{{ $hrh_doc->getCommentCount() }}</em>@endif
+							<span class="ssh-post-date">{{ $hrh_doc->getRegdate('Y.m.d') }}</span>
+						</a>
+					</li>
+					@endforeach
+				</ul>
+			</div>
+			@endforeach
+		</div>
+	</section>
+	@endif
+	@endif
+
+	@endforeach
+</div>

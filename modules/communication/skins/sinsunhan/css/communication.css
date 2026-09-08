@@ -1,0 +1,47 @@
+@charset "utf-8";
+/* 신선한 테마 커뮤니케이션(쪽지·친구) 스킨.
+ * 화면 틀·표·버튼·폼은 회원 스킨(member.css)이 그린다. 여기에는 쪽지 화면에만 있는 요소만 둔다.
+ * 색 토큰(--zm-*)은 member.css 가 .xm 에 정의한 것을 그대로 쓴다. */
+
+/* 쪽지 읽기 */
+.xm .xc-message-read th { width: 110px; white-space: nowrap; }
+.xm .xc-message-read .Zittme_content { line-height: 1.75; font-size: 15px; }
+.xm .xc-message-read .attachments { margin: 0; padding: 0; list-style: none; }
+.xm .xc-message-read .attachments li { padding: 6px 0; border-bottom: 1px dashed var(--zm-border); }
+.xm .xc-message-read .attachments li:last-child { border-bottom: 0; }
+.xm .xc-message-read .file_size { margin-left: 6px; font-size: 12px; color: var(--zm-text-sub); }
+
+/* 쪽지 목록 — 읽음/안읽음 */
+.xm .table .direction { display: inline-block; min-width: 42px; font-size: 12px; color: var(--zm-text-sub); }
+.xm .table tr.unread td, .xm .table td .unread { font-weight: 700; color: var(--zm-text); }
+.xm .table tr.read td .title a { color: var(--zm-text-sub); }
+.xm .table td .title a { color: var(--zm-text); text-decoration: none; }
+.xm .table td .title a:hover { color: var(--zm-brand); text-decoration: underline; }
+.xm .x_label.x_label-important { display: inline-block; padding: 2px 8px; border-radius: 999px; background: var(--zm-danger); color: #fff; font-size: 11px; font-weight: 700; }
+
+/* 쪽지 보내기 폼 */
+.xm .xc-msg-form { display: flex; flex-direction: column; gap: 16px; margin: 0 0 20px; }
+.xm .xc-msg-field { display: flex; flex-direction: column; gap: 7px; }
+.xm .xc-msg-label { display: block; margin: 0; font-size: 14px; font-weight: 700; color: var(--zm-text); }
+.xm .xc-msg-receiver { display: inline-flex; align-items: center; align-self: flex-start; padding: 9px 16px; border-radius: 999px; background: var(--zm-brand-soft); color: var(--zm-brand); font-size: 14px; font-weight: 700; text-decoration: none; }
+.xm input[type="text"].xc-msg-title { width: 100%; max-width: none; box-sizing: border-box; margin: 0; }
+.xm .xc-msg-inline { display: inline-flex; align-items: center; gap: 7px; margin: 0; font-weight: 500; }
+.xm .xc-msg-editor { margin: 0 0 4px; }
+.xm .btnArea.xc-msg-actions { justify-content: flex-start; margin: 24px 0 0; }
+
+/* 팝업(친구 추가 등)으로 열릴 때 */
+.xm.xc { padding: 20px; }
+
+/* 쪽지함 상단 툴바 — 탭(왼쪽)과 수신 설정 폼(오른쪽)을 한 줄, 같은 높이(46px)로 */
+.xm .btnArea { flex-wrap: wrap; }
+.xm .btnArea .btn-group { margin-right: auto; }
+.xm .btnArea form { display: inline-flex; align-items: center; gap: 8px; margin: 0; }
+.xm .btnArea form select, .xm .btnArea select { margin: 0; height: 46px !important; }
+.xm .btnArea form input[type="submit"].btn { margin: 0; }
+.xm .btnArea > div:empty { display: none; }
+@media (max-width: 640px) {
+	.xm .btnArea .btn-group { width: 100%; margin-right: 0; flex-wrap: wrap; }
+	.xm .btnArea .btn-group .btn { flex: 1 1 auto; min-width: 0; padding-left: 12px; padding-right: 12px; }
+	.xm .btnArea form { width: 100%; }
+	.xm .btnArea form select { flex: 1 1 auto; }
+}

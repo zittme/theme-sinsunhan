@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout version="0.2">
+	<responsive>true</responsive>
+	<title xml:lang="ko">신선한</title>
+	<title xml:lang="en">Sinsunhan</title>
+	<description xml:lang="ko">NAVER가 만든 XE 시절 기본 레이아웃의 구성(상단 2뎁스 메뉴 · 비주얼 슬라이더 · 서브 LNB)을 물려받아, 템플릿 v2로 새로 쓰고 디자인을 현재 기준으로 다시 해석한 레이아웃입니다. 페이지 유형은 사이트맵의 메뉴 클래스에 m(메인) / sl(서브 LNB) / sf(전체 폭)를 입력해 지정합니다. 회원·쪽지·결제 화면은 자동으로 전체 폭이 됩니다.</description>
+	<description xml:lang="en">Inherits the structure of the classic XE default layout by NAVER: two-depth GNB, visual slider, sub LNB, rewritten on template v2 with a contemporary design. Set the page type by entering m (main) / sl (sub LNB) / sf (full width) in the menu class field of the sitemap. Member, message and payment screens switch to full width automatically.</description>
+	<version>1.0.0</version>
+	<date>2026-08-04</date>
+	<author email_address="zittme-contact@zzan.me" link="https://zitt.me">
+		<name xml:lang="ko">ZZAN Studio</name>
+		<name xml:lang="en">ZZAN Studio</name>
+	</author>
+
+	<menus>
+		<menu name="gnb" maxdepth="3" default="true">
+			<title xml:lang="ko">상단 메뉴</title>
+			<title xml:lang="en">Main Menu</title>
+		</menu>
+		<menu name="footer_menu" maxdepth="1">
+			<title xml:lang="ko">푸터 메뉴</title>
+			<title xml:lang="en">Footer Menu</title>
+		</menu>
+	</menus>
+
+	<extra_vars>
+		<group>
+			<title xml:lang="ko">기본</title>
+			<title xml:lang="en">Basic</title>
+			<var name="logo_image" type="image">
+				<title xml:lang="ko">로고 이미지</title>
+				<title xml:lang="en">Logo image</title>
+				<description xml:lang="ko">비워두면 아래 로고 텍스트를 사용합니다. 높이 40px 기준으로 표시됩니다.</description>
+			</var>
+			<var name="logo_image_dark" type="image">
+				<title xml:lang="ko">다크모드 로고 이미지</title>
+				<title xml:lang="en">Dark mode logo image</title>
+				<description xml:lang="ko">다크모드에서 대신 표시할 로고입니다. 비워두면 기본 로고 이미지를 그대로 사용합니다.</description>
+				<description xml:lang="en">Shown instead of the default logo in dark mode. Falls back to the default logo image when empty.</description>
+			</var>
+			<var name="logo_text" type="text">
+				<title xml:lang="ko">로고 텍스트</title>
+				<title xml:lang="en">Logo text</title>
+				<description xml:lang="ko">비워두면 사이트 제목이 표시됩니다.</description>
+			</var>
+			<var name="point_color" type="colorpicker">
+				<title xml:lang="ko">포인트 색상</title>
+				<title xml:lang="en">Point color</title>
+			</var>
+			<var name="content_width" type="select" default="1180">
+				<title xml:lang="ko">본문 최대 너비</title>
+				<title xml:lang="en">Content width</title>
+				<options value="1060"><title xml:lang="ko">좁게 (1060px)</title><title xml:lang="en">Narrow (1060px)</title></options>
+				<options value="1180"><title xml:lang="ko">기본 (1180px)</title><title xml:lang="en">Default (1180px)</title></options>
+				<options value="1320"><title xml:lang="ko">넓게 (1320px)</title><title xml:lang="en">Wide (1320px)</title></options>
+			</var>
+			<var name="gnb_width" type="select" default="boxed">
+				<title xml:lang="ko">메뉴 바 너비</title>
+				<title xml:lang="en">Menu bar width</title>
+				<description xml:lang="ko">기본값은 본문 폭에 맞춘 형태입니다. 좌우를 가득 채우면 바 배경이 화면 끝까지 이어집니다.</description>
+				<options value="boxed"><title xml:lang="ko">본문 폭에 맞춤 (기본)</title><title xml:lang="en">Match content width (default)</title></options>
+				<options value="full"><title xml:lang="ko">좌우 100% 채우기</title><title xml:lang="en">Full width</title></options>
+			</var>
+			<var name="gnb_color" type="select" default="dark">
+				<title xml:lang="ko">메뉴 바 색상</title>
+				<title xml:lang="en">Menu bar color</title>
+				<options value="dark"><title xml:lang="ko">어둡게 (기본)</title><title xml:lang="en">Dark (default)</title></options>
+				<options value="point"><title xml:lang="ko">포인트 색상</title><title xml:lang="en">Point color</title></options>
+				<options value="light"><title xml:lang="ko">밝게</title><title xml:lang="en">Light</title></options>
+			</var>
+			<var name="mobile_theme_pos" type="select" default="drawer">
+				<title xml:lang="ko">모바일 다크모드 버튼 위치</title>
+				<title xml:lang="en">Mobile dark mode button position</title>
+				<description xml:lang="ko">PC에서는 항상 헤더에 표시됩니다. 모바일에서 어디에 둘지 선택합니다.</description>
+				<description xml:lang="en">Always shown in the header on PC. Choose where it goes on mobile.</description>
+				<options value="drawer"><title xml:lang="ko">메뉴 서랍 안 (기본)</title><title xml:lang="en">In the menu drawer (default)</title></options>
+				<options value="header"><title xml:lang="ko">헤더</title><title xml:lang="en">Header</title></options>
+				<options value="footer"><title xml:lang="ko">푸터</title><title xml:lang="en">Footer</title></options>
+			</var>
+			<var name="mobile_lang_pos" type="select" default="drawer">
+				<title xml:lang="ko">모바일 언어 선택 위치</title>
+				<title xml:lang="en">Mobile language selector position</title>
+				<description xml:lang="ko">PC에서는 항상 헤더에 표시됩니다. 모바일에서 어디에 둘지 선택합니다.</description>
+				<description xml:lang="en">Always shown in the header on PC. Choose where it goes on mobile.</description>
+				<options value="drawer"><title xml:lang="ko">메뉴 서랍 안 (기본)</title><title xml:lang="en">In the menu drawer (default)</title></options>
+				<options value="header"><title xml:lang="ko">헤더</title><title xml:lang="en">Header</title></options>
+				<options value="footer"><title xml:lang="ko">푸터</title><title xml:lang="en">Footer</title></options>
+			</var>
+			<var name="color_scheme" type="select" default="auto">
+				<title xml:lang="ko">색상 모드</title>
+				<title xml:lang="en">Color scheme</title>
+				<options value="auto"><title xml:lang="ko">방문자 기기 설정에 맞춤</title><title xml:lang="en">Follow device</title></options>
+				<options value="light"><title xml:lang="ko">항상 밝게</title><title xml:lang="en">Always light</title></options>
+				<options value="dark"><title xml:lang="ko">항상 어둡게</title><title xml:lang="en">Always dark</title></options>
+			</var>
+		</group>
+
+		<group>
+			<title xml:lang="ko">첫 화면</title>
+			<title xml:lang="en">Front page</title>
+			<var name="show_visual" type="select" default="main">
+				<title xml:lang="ko">비주얼 슬라이더 표시</title>
+				<title xml:lang="en">Show visual slider</title>
+				<description xml:lang="ko">원본 레이아웃의 비주얼 영역입니다. 슬라이드를 하나도 등록하지 않으면 표시되지 않습니다.</description>
+				<options value="main"><title xml:lang="ko">메인 형태일 때만</title><title xml:lang="en">Main type only</title></options>
+				<options value="all"><title xml:lang="ko">서브 페이지에도 표시</title><title xml:lang="en">Sub pages too</title></options>
+				<options value="none"><title xml:lang="ko">사용 안 함</title><title xml:lang="en">Off</title></options>
+			</var>
+			<var name="visual_interval" type="text" default="6">
+				<title xml:lang="ko">자동 넘김 간격 (초)</title>
+				<title xml:lang="en">Autoplay interval (sec)</title>
+				<description xml:lang="ko">0을 입력하면 자동으로 넘기지 않습니다.</description>
+			</var>
+			<var name="visuals" type="repeat">
+				<title xml:lang="ko">비주얼 슬라이드</title>
+				<title xml:lang="en">Visual slides</title>
+				<item>
+					<var name="image" type="image"><title xml:lang="ko">배경 이미지</title><title xml:lang="en">Background image</title></var>
+					<var name="title" type="text"><title xml:lang="ko">제목</title><title xml:lang="en">Title</title></var>
+					<var name="text" type="textarea"><title xml:lang="ko">설명</title><title xml:lang="en">Description</title></var>
+					<var name="link_text" type="text"><title xml:lang="ko">버튼 이름</title><title xml:lang="en">Button label</title></var>
+					<var name="link_url" type="text"><title xml:lang="ko">버튼 링크</title><title xml:lang="en">Button link</title></var>
+					<var name="align" type="select" default="center">
+						<title xml:lang="ko">문구 정렬</title>
+						<title xml:lang="en">Text align</title>
+						<options value="left"><title xml:lang="ko">왼쪽</title><title xml:lang="en">Left</title></options>
+						<options value="center"><title xml:lang="ko">가운데</title><title xml:lang="en">Center</title></options>
+						<options value="right"><title xml:lang="ko">오른쪽</title><title xml:lang="en">Right</title></options>
+					</var>
+				</item>
+			</var>
+		</group>
+
+		<group>
+			<title xml:lang="ko">메인 구성</title>
+			<title xml:lang="en">Front sections</title>
+			<var name="cat_icons" type="repeat">
+				<title xml:lang="ko">카테고리 아이콘</title>
+				<title xml:lang="en">Category icons</title>
+				<description xml:lang="ko">메인 카테고리 타일에 첫 음절 대신 보여줄 아이콘입니다. 카테고리 이름이 정확히 일치하는 항목에 적용되며, 이미지가 있으면 이미지를, 없으면 이모지/글자를 씁니다. 영어처럼 첫 글자로 구분이 어려운 언어에 유용합니다.</description>
+				<description xml:lang="en">Icons shown on the front-page category tiles instead of the first letter. Matched by exact category title; image first, then emoji/text.</description>
+				<item>
+					<var name="cat_title" type="text"><title xml:lang="ko">카테고리 이름</title><title xml:lang="en">Category title</title></var>
+					<var name="icon_image" type="image"><title xml:lang="ko">아이콘 이미지</title><title xml:lang="en">Icon image</title></var>
+					<var name="icon_text" type="text"><title xml:lang="ko">이모지 또는 글자</title><title xml:lang="en">Emoji or short text</title></var>
+				</item>
+			</var>
+			<var name="shop_mid" type="text">
+				<title xml:lang="ko">상점 모듈 주소(mid)</title>
+				<title xml:lang="en">Shop module mid</title>
+				<description xml:lang="ko">비워두면 첫 번째 커머스 모듈을 자동으로 사용합니다.</description>
+				<description xml:lang="en">Falls back to the first commerce module when empty.</description>
+			</var>
+			<var name="home_sections" type="repeat">
+				<title xml:lang="ko">메인페이지 섹션</title>
+				<title xml:lang="en">Front page sections</title>
+				<description xml:lang="ko">대문(메인 형태)에 표시할 섹션을 순서대로 구성합니다. 하나도 없으면 기본 구성(카테고리, 추천, 신상품, 할인, 최신 글)을 사용합니다.</description>
+				<description xml:lang="en">Sections shown on the front page in order. Uses the default set when empty.</description>
+				<item>
+					<var name="stype" type="select" default="items_new">
+						<title xml:lang="ko">섹션 종류</title>
+						<title xml:lang="en">Section type</title>
+						<options value="categories"><title xml:lang="ko">상점 카테고리 타일</title><title xml:lang="en">Category tiles</title></options>
+						<options value="items_recommend"><title xml:lang="ko">추천 상품</title><title xml:lang="en">Recommended items</title></options>
+						<options value="items_new"><title xml:lang="ko">신상품</title><title xml:lang="en">New items</title></options>
+						<options value="items_sale"><title xml:lang="ko">할인 상품</title><title xml:lang="en">Items on sale</title></options>
+						<options value="items_popular"><title xml:lang="ko">인기 상품</title><title xml:lang="en">Popular items</title></options>
+						<options value="daily"><title xml:lang="ko">일일특가 (하루마다 바뀌는 특가 1종)</title><title xml:lang="en">Daily deal</title></options>
+						<options value="promos"><title xml:lang="ko">진행 중 기획전 카드</title><title xml:lang="en">Promotions</title></options>
+						<options value="ranking"><title xml:lang="ko">실시간 인기 랭킹 (구매·조회순)</title><title xml:lang="en">Top ranking</title></options>
+						<options value="banner"><title xml:lang="ko">배너 스트립 (슬라이드 이미지 재사용)</title><title xml:lang="en">Banner strip</title></options>
+						<options value="posts"><title xml:lang="ko">게시판 최신 글</title><title xml:lang="en">Latest board posts</title></options>
+					</var>
+					<var name="title" type="text"><title xml:lang="ko">섹션 제목 (비우면 자동)</title><title xml:lang="en">Title (auto when empty)</title></var>
+					<var name="source" type="text">
+						<title xml:lang="ko">출처</title>
+						<title xml:lang="en">Source</title>
+						<description xml:lang="ko">게시판 최신 글: 게시판 주소(mid) 입력. 배너 스트립: 몇 번째 슬라이드인지 번호 입력(비우면 차례대로). 비우면 기본값을 사용합니다.</description>
+					</var>
+					<var name="count" type="text" default="8"><title xml:lang="ko">표시 개수</title><title xml:lang="en">Count</title></var>
+				</item>
+			</var>
+		</group>
+
+		<group>
+			<title xml:lang="ko">본문·사이드</title>
+			<title xml:lang="en">Body &amp; side</title>
+			<var name="use_search" type="select" default="Y">
+				<title xml:lang="ko">통합 검색 사용</title>
+				<title xml:lang="en">Use integrated search</title>
+				<options value="Y"><title xml:lang="ko">사용</title><title xml:lang="en">On</title></options>
+				<options value="N"><title xml:lang="ko">사용 안 함</title><title xml:lang="en">Off</title></options>
+			</var>
+			<var name="use_login_box" type="select" default="N">
+				<title xml:lang="ko">사이드에 로그인 상자 표시</title>
+				<title xml:lang="en">Show login box in side area</title>
+				<options value="N"><title xml:lang="ko">표시 안 함</title><title xml:lang="en">Off</title></options>
+				<options value="Y"><title xml:lang="ko">표시</title><title xml:lang="en">On</title></options>
+				<description xml:lang="ko">원본 레이아웃의 로그인 위젯 자리입니다. 끄면 상단 메뉴의 로그인 링크만 사용합니다.</description>
+			</var>
+		</group>
+
+		<group>
+			<title xml:lang="ko">푸터</title>
+			<title xml:lang="en">Footer</title>
+			<var name="footer_about" type="textarea">
+				<title xml:lang="ko">사이트 소개 문구</title>
+				<title xml:lang="en">About text</title>
+			</var>
+			<var name="footer_tel" type="text">
+				<title xml:lang="ko">고객센터 전화번호</title>
+				<title xml:lang="en">Customer center phone</title>
+				<description xml:lang="ko">비워두면 고객센터 블록이 표시되지 않습니다.</description>
+			</var>
+			<var name="footer_hours" type="textarea">
+				<title xml:lang="ko">고객센터 운영시간</title>
+				<title xml:lang="en">Customer center hours</title>
+				<description xml:lang="ko">줄바꿈한 각 줄이 한 항목으로 표시됩니다.</description>
+			</var>
+			<var name="footer_email" type="text">
+				<title xml:lang="ko">문의 이메일</title>
+				<title xml:lang="en">Contact email</title>
+			</var>
+			<var name="sns_instagram" type="text"><title xml:lang="ko">인스타그램 주소</title><title xml:lang="en">Instagram URL</title></var>
+			<var name="sns_facebook" type="text"><title xml:lang="ko">페이스북 주소</title><title xml:lang="en">Facebook URL</title></var>
+			<var name="sns_youtube" type="text"><title xml:lang="ko">유튜브 주소</title><title xml:lang="en">YouTube URL</title></var>
+			<var name="sns_blog" type="text"><title xml:lang="ko">블로그 주소</title><title xml:lang="en">Blog URL</title></var>
+			<var name="footer_disclaimer" type="textarea">
+				<title xml:lang="ko">하단 안내 문구</title>
+				<title xml:lang="en">Footer disclaimer</title>
+				<description xml:lang="ko">저작권 표기 위에 작은 글씨로 표시되는 안내·면책 문구입니다.</description>
+			</var>
+			<var name="footer_info" type="textarea">
+				<title xml:lang="ko">사업자·연락처 정보</title>
+				<title xml:lang="en">Business info</title>
+				<description xml:lang="ko">줄바꿈한 각 줄이 한 항목으로 표시됩니다.</description>
+			</var>
+			<var name="copyright" type="text">
+				<title xml:lang="ko">저작권 표기</title>
+				<title xml:lang="en">Copyright</title>
+			</var>
+		</group>
+	</extra_vars>
+</layout>

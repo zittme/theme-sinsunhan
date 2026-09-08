@@ -1,0 +1,241 @@
+@version(2)
+@load('./lang')
+@load('../../assets/sinsunhan.css')
+@load('css/layout.css')
+@load('js/layout.js')
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+
+@php
+$hr = $layout_info;
+$hr_width = (int)($hr->content_width ?? 1180) ?: 1180;
+$hr_scheme = $hr->color_scheme ?? 'auto';
+$hr_point = trim((string)($hr->point_color ?? ''));
+
+$hr_menu = array_values($gnb->list ?? []);
+
+$hr_current = null;
+foreach ($hr_menu as $hr_m) {
+	if (!empty($hr_m['selected']) || !empty($hr_m['open'])) { $hr_current = $hr_m; break; }
+}
+$hr_type = $hr->layout_type ?? 'sub';
+
+$hr_class_map = ['m' => 'main', 'sl' => 'sub', 'sf' => 'sub_full'];
+$hr_selected_class = '';
+foreach ($hr_menu as $hr_m) {
+	if (empty($hr_m['selected']) && empty($hr_m['open'])) continue;
+	$hr_selected_class = (string)($hr_m['class'] ?? '');
+	foreach ((array)($hr_m['list'] ?? []) as $hr_m2) {
+		if (empty($hr_m2['selected']) && empty($hr_m2['open'])) continue;
+		$hr_selected_class = (string)($hr_m2['class'] ?? '') ?: $hr_selected_class;
+		foreach ((array)($hr_m2['list'] ?? []) as $hr_m3) {
+			if (!empty($hr_m3['selected'])) {
+				$hr_selected_class = (string)($hr_m3['class'] ?? '') ?: $hr_selected_class;
+			}
+		}
+	}
+	break;
+}
+$hr_has_class_type = false;
+foreach (preg_split('/\s+/', trim($hr_selected_class)) as $hr_token) {
+	if (isset($hr_class_map[$hr_token])) {
+		$hr_type = $hr_class_map[$hr_token];
+		$hr_has_class_type = true;
+		break;
+	}
+}
+
+$hr_module_info = \Context::get('current_module_info');
+$hr_module_now = is_object($hr_module_info) ? (string)($hr_module_info->module ?? '') : '';
+
+// 사이트 대문은 메뉴 클래스 지정이 없으면 메인(비주얼)으로 본다.
+// 대문에 sl/sf 클래스를 넣으면 그 지정이 우선한다.
+$hr_site_info = \Context::get('site_module_info');
+$hr_home_mid = is_object($hr_site_info) ? (string)($hr_site_info->mid ?? '') : '';
+$hr_now_mid = is_object($hr_module_info) ? (string)($hr_module_info->mid ?? '') : '';
+if (!$hr_has_class_type && $hr_home_mid !== '' && $hr_now_mid === $hr_home_mid)
+{
+	$hr_type = 'main';
+}
+$hr_full_modules = ['member', 'communication', 'zittme_pay', 'integration_search'];
+if (!$hr_has_class_type && in_array($hr_module_now, $hr_full_modules, true)) {
+	$hr_type = 'sub_full';
+}
+// 신선한 테마는 서브페이지 LNB 를 쓰지 않는다 — 서브도 항상 본문 전체 폭
+$hr_lnb = null;
+
+$hr_visuals = array_map(function($hr_nv) { return is_array($hr_nv) ? $hr_nv : (array)$hr_nv; }, array_values((array)($hr->visuals ?? [])));
+// 슬라이드를 하나도 등록하지 않았으면 상점(커머스) 홈 배너를 대문 슬라이더로 승계한다
+if (!count($hr_visuals))
+{
+	$hr_shop_cfg = ModuleModel::getModuleConfig('commerce');
+	$hr_shop_bn = is_object($hr_shop_cfg) ? json_decode((string)($hr_shop_cfg->home_banners ?? ''), true) : null;
+	foreach ((is_array($hr_shop_bn) ? $hr_shop_bn : []) as $hr_bv)
+	{
+		if (!is_array($hr_bv) || empty($hr_bv['image'])) { continue; }
+		$hr_visuals[] = [
+			'image' => (string)$hr_bv['image'],
+			'title' => (string)($hr_bv['title'] ?? ''),
+			'text' => (string)($hr_bv['text'] ?? ''),
+			'link_text' => '',
+			'link_url' => (string)($hr_bv['url'] ?? ''),
+			'align' => (string)($hr_bv['align'] ?? 'left'),
+		];
+	}
+}
+$hr_visual_mode = $hr->show_visual ?? 'main';
+$hr_show_visual = count($hr_visuals) && $hr_visual_mode !== 'none'
+	&& ($hr_visual_mode === 'all' || $hr_type === 'main');
+$hr_interval = max(0, (int)($hr->visual_interval ?? 6));
+
+foreach (['logo_text', 'footer_about', 'footer_info', 'copyright'] as $hr_lang_field)
+{
+	if (!empty($hr->$hr_lang_field))
+	{
+		$hr->$hr_lang_field = \Context::replaceUserLang((string)$hr->$hr_lang_field);
+	}
+}
+foreach ($hr_visuals as $hr_vk => $hr_vv)
+{
+	foreach (['title', 'text', 'link_text'] as $hr_lang_field)
+	{
+		if (!empty($hr_vv[$hr_lang_field]))
+		{
+			$hr_visuals[$hr_vk][$hr_lang_field] = \Context::replaceUserLang((string)$hr_vv[$hr_lang_field]);
+		}
+	}
+}
+$hr_footer_info = array_values(array_filter(array_map('trim', explode("\n", (string)($hr->footer_info ?? '')))));
+@endphp
+
+<script>
+(function () {
+	var fixed = '{{ $hr_scheme }}';
+	var saved = null;
+	try { saved = localStorage.getItem('hr-theme'); } catch (e) {}
+	var theme = (fixed === 'auto')
+		? (saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
+		: fixed;
+	document.documentElement.setAttribute('data-theme', theme);
+	// 코어(detectColorScheme)와 코어 스킨들은 body 클래스를 본다. 여기서 알려 주지 않으면
+	// 코어가 기기 설정을 따로 읽어, 레이아웃은 밝은데 그 조각만 어두워진다
+	var mark = function () {
+		if (!document.body) { return; }
+		document.body.classList.remove('color_scheme_light', 'color_scheme_dark');
+		document.body.classList.add('color_scheme_' + theme);
+	};
+	if (document.body) { mark(); }
+	else { document.addEventListener('DOMContentLoaded', mark); }
+})();
+</script>
+
+{{-- 창 스크롤바는 html 이 그린다. 점 색이 감싸는 요소에만 있으면 거기까지 닿지 않는다 --}}
+@if ($hr_point !== '')<style>:root { --hr-brand: {{ $hr_point }}; }</style>@endif
+
+<div class="hr hr-layout t-{{ $hr_type }} n-{{ $hr->gnb_color ?? 'dark' }} mtp-{{ $hr->mobile_theme_pos ?? 'drawer' }} mlp-{{ $hr->mobile_lang_pos ?? 'drawer' }}" style="--hr-w:{{ $hr_width }}px;@if ($hr_point !== '') --hr-brand:{{ $hr_point }}@endif">
+
+	@include('_header')
+
+	@if ($hr_show_visual)
+		@include('_visual')
+	@endif
+
+	<main id="hr_content" class="hr-body">
+		<div class="hr-inner hr-body-inner">
+
+			@if ($hr_type === 'main')
+			@include('_home')
+			@endif
+
+			<div class="hr-content rhymix_content">{!! $content !!}</div>
+
+		</div>
+	</main>
+
+	@include('_footer')
+
+	{{-- 모바일 하단 탭바 (860px 이하에서만 표시) --}}
+	@php $hr_tab_shop = $ss_shop_mid ?? ''; @endphp
+	<nav class="ss-tabbar" aria-label="{{ $lang->hr_main_menu }}">
+		<a href="{{ getUrl('') }}">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 12h3v8h6v-6h2v6h6v-8h3z"/></svg>
+			<span>{{ $lang->ss_tab_home }}</span>
+		</a>
+		<button type="button" id="ss_tab_cats">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zm9 0h7v7h-7zM4 13h7v7H4zm9 0h7v7h-7z"/></svg>
+			<span>{{ $lang->ss_tab_cats }}</span>
+		</button>
+		<button type="button" id="ss_tab_search">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 1 0 4.6 13.4l4.2 4.3 1.5-1.5-4.3-4.2A7.5 7.5 0 0 0 10.5 3zm0 2a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11z"/></svg>
+			<span>{{ $lang->ss_tab_search }}</span>
+		</button>
+		@if ($hr_tab_shop !== '')
+		<a href="{{ getUrl('', 'mid', $hr_tab_shop, 'act', 'dispCommerceCart') }}">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h15l-1.7 8.4a2 2 0 0 1-2 1.6H9.6a2 2 0 0 1-2-1.6L5.5 3.5H2.5v-2h4.6L8 6zm2 12a2 2 0 1 1-2 2 2 2 0 0 1 2-2zm10 0a2 2 0 1 1-2 2 2 2 0 0 1 2-2z"/></svg>
+			@if (($ss_cart_count ?? 0) > 0)<em class="ss-tabbar-badge">{{ $ss_cart_count > 99 ? '99+' : $ss_cart_count }}</em>@endif
+			<span>{{ $lang->ss_cart }}</span>
+		</a>
+		@endif
+		<a href="{{ $is_logged ? getUrl('', 'act', 'dispMemberInfo') : getUrl('', 'act', 'dispMemberLoginForm') }}">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4 0-9 2-9 5.5V22h18v-2.5C21 16 16 14 12 14z"/></svg>
+			<span>{{ $lang->ss_mypage }}</span>
+		</a>
+	</nav>
+
+	{{-- 하단 탭바용 바텀시트: 상점 카테고리 / 상점 검색 --}}
+	<div class="ss-sheet-dim" id="ss_sheet_dim" hidden></div>
+
+	<div class="ss-sheet" id="ss_sheet_cats" role="dialog" aria-modal="true" aria-label="{{ $lang->ss_all_categories }}" hidden>
+		<div class="ss-sheet-head">
+			<strong>{{ $lang->ss_all_categories }}</strong>
+			<button type="button" class="ss-sheet-close" data-ss-sheet-close aria-label="{{ $lang->hr_menu_close }}">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7l1.4-1.4 6.3 6.3 6.3-6.3z"/></svg>
+			</button>
+		</div>
+		<div class="ss-sheet-body">
+			@if (count($ss_cats ?? []))
+			<ul class="ss-sheet-cats">
+				@foreach ($ss_cats as $ss_c)
+				<li>
+					<a class="ss-sheet-cat-top" href="{{ $ss_shop_url }}{{ $ss_amp }}v=list&amp;category={{ $ss_c->category_srl }}">{{ $ss_c->title }}</a>
+					@if (count($ss_c->kids))
+					<div class="ss-sheet-cat-sub">
+						@foreach ($ss_c->kids as $ss_k)
+						<a href="{{ $ss_shop_url }}{{ $ss_amp }}v=list&amp;category={{ $ss_k->category_srl }}">{{ $ss_k->title }}</a>
+						@endforeach
+					</div>
+					@endif
+				</li>
+				@endforeach
+			</ul>
+			@if ($ss_shop_url !== '')
+			<a class="ss-sheet-all hr-btn hr-btn-primary" href="{{ $ss_shop_url }}{{ $ss_amp }}v=list">{{ $lang->ssh_all_items }}</a>
+			@endif
+			@endif
+		</div>
+	</div>
+
+	<div class="ss-sheet" id="ss_sheet_search" role="dialog" aria-modal="true" aria-label="{{ $lang->hr_search }}" hidden>
+		<div class="ss-sheet-head">
+			<strong>{{ $lang->hr_search }}</strong>
+			<button type="button" class="ss-sheet-close" data-ss-sheet-close aria-label="{{ $lang->hr_menu_close }}">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7l1.4-1.4 6.3 6.3 6.3-6.3z"/></svg>
+			</button>
+		</div>
+		<div class="ss-sheet-body">
+			<form class="ss-sheet-search" action="{{ getUrl() }}" method="get" role="search">
+				@if (($ss_shop_mid ?? '') !== '')
+				<input type="hidden" name="mid" value="{{ $ss_shop_mid }}" />
+				<input type="hidden" name="v" value="list" />
+				<input type="search" name="q" placeholder="{{ $lang->ss_search_ph }}" aria-label="{{ $lang->ss_search_ph }}" />
+				@else
+				<input type="hidden" name="act" value="IS" />
+				<input type="hidden" name="mid" value="{{ $mid ?? '' }}" />
+				<input type="search" name="is_keyword" placeholder="{{ $lang->hr_search }}" aria-label="{{ $lang->hr_search_all }}" />
+				@endif
+				<button type="submit" class="hr-btn hr-btn-primary">{{ $lang->hr_search }}</button>
+			</form>
+		</div>
+	</div>
+
+</div>

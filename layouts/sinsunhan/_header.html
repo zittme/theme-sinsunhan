@@ -1,0 +1,382 @@
+@version(2)
+@php
+$ss_cats = [];
+$ss_shop_mid = trim((string)($hr->shop_mid ?? ''));
+if ($ss_shop_mid === '')
+{
+	foreach (ModuleModel::getMidList((object)['module' => 'commerce'], ['mid']) ?: [] as $ss_row)
+	{
+		$ss_shop_mid = (string)($ss_row->mid ?? '');
+		break;
+	}
+}
+// 장바구니 수량 뱃지. 커머스 화면이 아닌 곳에서는 $cart_count 가 없으므로 여기서 직접 센다.
+// rows() 는 owner(false) 를 쓰므로 손님에게 장바구니 쿠키를 새로 심지 않는다.
+$ss_cart_count = 0;
+if ($ss_shop_mid !== '' && class_exists('\\Zittme\\Modules\\Commerce\\Models\\Cart'))
+{
+	$ss_cart_count = count(\Zittme\Modules\Commerce\Models\Cart::rows());
+}
+
+if (($hr->use_shop_menu ?? 'Y') !== 'N' && $ss_shop_mid !== '')
+{
+	$ss_out = executeQuery('commerce.getCategoryList', (object)['is_active' => 'Y']);
+	if ($ss_out->toBool() && !empty($ss_out->data))
+	{
+		$ss_rows = is_array($ss_out->data) ? $ss_out->data : [$ss_out->data];
+		$ss_child = [];
+		foreach ($ss_rows as $ss_row)
+		{
+			if (empty($ss_row->category_srl)) { continue; }
+			$ss_row->title = \Context::replaceUserLang((string)$ss_row->title);
+			$ss_child[(int)$ss_row->parent_srl][] = $ss_row;
+		}
+		foreach ($ss_child[0] ?? [] as $ss_top)
+		{
+			$ss_top->kids = $ss_child[(int)$ss_top->category_srl] ?? [];
+			$ss_cats[] = $ss_top;
+		}
+	}
+}
+$ss_shop_url = $ss_shop_mid !== '' ? getUrl('', 'mid', $ss_shop_mid) : '';
+$ss_amp = strpos($ss_shop_url, '?') === false ? '?' : '&';
+
+$hr_langs = \Context::get('lang_supported');
+$hr_langs = is_array($hr_langs) ? $hr_langs : [];
+$hr_lang_now = \Context::getLangType();
+$hr_lang_uri = (string)($_SERVER['REQUEST_URI'] ?? '/');
+$hr_lang_uri = preg_replace('/([?&])l=[^&]*/', '$1', $hr_lang_uri);
+$hr_lang_uri = preg_replace('/[?&]+$/', '', $hr_lang_uri);
+$hr_lang_uri = str_replace('&&', '&', $hr_lang_uri);
+$hr_lang_sep = strpos($hr_lang_uri, '?') === false ? '?' : '&';
+@endphp
+<header class="hr-header ss-head" id="hr_header">
+
+	<div class="ss-topbar">
+		<div class="hr-inner ss-topbar-inner">
+			@if ($is_logged)
+			<a href="{{ getUrl('', 'act', 'dispMemberInfo') }}">{{ $logged_info->nick_name }}</a>
+			@if ($logged_info->is_admin == 'Y')
+			<a href="{{ getUrl('', 'module', 'admin') }}" target="_blank">{{ $lang->hr_admin }}</a>
+			<a href="{{ getUrl('', 'module', 'commerce', 'act', 'dispCommerceConsole') }}" target="_blank" class="ss-topbar-shopadmin">{{ $lang->hr_shop_admin }}</a>
+			<a href="{{ getUrl('', 'module', 'admin', 'act', 'dispZittme_payAdminConfig') }}" target="_blank" class="ss-topbar-payadmin">{{ $lang->hr_pay_admin }}</a>
+			@endif
+			<a href="{{ getUrl('', 'act', 'dispMemberLogout') }}">{{ $lang->hr_logout }}</a>
+			@else
+			<a href="{{ getUrl('', 'act', 'dispMemberLoginForm') }}">{{ $lang->hr_login }}</a>
+			<a href="{{ getUrl('', 'act', 'dispMemberSignUpForm') }}">{{ $lang->hr_signup }}</a>
+			@endif
+
+			@if (count($hr_langs) > 1)
+			<div class="hr-lang" id="hr_lang">
+				<button type="button" class="hr-lang-btn" aria-haspopup="true" aria-expanded="false" aria-label="{{ $lang->hr_lang_select }}">
+					<span>{{ $hr_langs[$hr_lang_now] ?? strtoupper($hr_lang_now) }}</span>
+				</button>
+				<ul class="hr-lang-list" hidden>
+					@foreach ($hr_langs as $hr_lang_code => $hr_lang_name)
+					<li><a href="{{ $hr_lang_uri }}{{ $hr_lang_sep }}l={{ $hr_lang_code }}" @if ($hr_lang_code === $hr_lang_now) class="is-on" @endif>{{ $hr_lang_name }}</a></li>
+					@endforeach
+				</ul>
+			</div>
+			@endif
+
+			@if ($hr_scheme === 'auto')
+			<button type="button" class="ss-topbar-theme" data-hr-theme-toggle aria-label="{{ $lang->hr_theme_toggle }}">
+				<svg class="hr-ico-sun" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-6 1 3h-2l1-3zm0 19 1 3h-2l1-3zM2 12l3-1v2l-3-1zm17-1 3 1-3 1v-2zM4.2 4.2l2.6 1.6-1 1-1.6-2.6zm13 13 2.6 1.6-1.6-2.6-1 1zm2.6-13-1.6 2.6-1-1 2.6-1.6zM4.2 19.8l1.6-2.6 1 1-2.6 1.6z"/></svg>
+				<svg class="hr-ico-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 13.8A8.5 8.5 0 0 1 10.2 3.7 8.5 8.5 0 1 0 20.3 13.8z"/></svg>
+			</button>
+			@endif
+		</div>
+	</div>
+
+	<div class="ss-mainrow">
+		<div class="hr-inner ss-mainrow-inner">
+			<a class="ss-logo" href="{{ getUrl('') }}">
+				@if (!empty($hr->logo_image))
+				<img class="hr-logo-light" src="{{ $hr->logo_image }}" alt="{{ $hr->logo_text ?: ($site_title ?? '') }}" />
+				@if (!empty($hr->logo_image_dark))
+				<img class="hr-logo-dark" src="{{ $hr->logo_image_dark }}" alt="{{ $hr->logo_text ?: ($site_title ?? '') }}" />
+				@endif
+				@else
+				<span>{{ $hr->logo_text ?: ($site_title ?? 'HOME') }}</span>
+				@endif
+			</a>
+
+			@if ($hr->use_search !== 'N')
+			<form class="ss-search" action="{{ getUrl() }}" method="get" role="search">
+				@if ($ss_shop_mid !== '')
+				<input type="hidden" name="mid" value="{{ $ss_shop_mid }}" />
+				<input type="hidden" name="v" value="list" />
+				<input type="search" name="q" placeholder="{{ $lang->ss_search_ph }}" aria-label="{{ $lang->ss_search_ph }}" value="{{ \Context::get('current_q') ?: '' }}" />
+				@else
+				<input type="hidden" name="act" value="IS" />
+				<input type="hidden" name="mid" value="{{ $mid ?? '' }}" />
+				<input type="search" name="is_keyword" placeholder="{{ $lang->hr_search }}" aria-label="{{ $lang->hr_search_all }}" />
+				@endif
+				<button type="submit" aria-label="{{ $lang->hr_search }}">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 1 0 4.6 13.4l4.2 4.3 1.5-1.5-4.3-4.2A7.5 7.5 0 0 0 10.5 3zm0 2a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11z"/></svg>
+				</button>
+			</form>
+			@endif
+
+			<div class="ss-icons">
+				@if ($is_logged)
+				@php
+				$hr_nc_items = [];
+				$hr_nc_unread = 0;
+				$hr_nc_on = false;
+				$hr_nc_member_mid = '';
+				$hr_nc_show_all = false;
+				if (class_exists('NcenterliteModel')) {
+					// 알림센터가 설치돼 있어도 사용 알림 종류가 없거나, 표시 대상(PC/모바일)이 아니면 벨을 숨긴다.
+					$hr_nc_cfg = NcenterliteModel::getConfig();
+					$hr_nc_use = $hr_nc_cfg->use ?? null;
+					$hr_nc_enabled = is_array($hr_nc_use) ? count($hr_nc_use) > 0 : ($hr_nc_use === 'Y');
+					$hr_nc_display = (string)($hr_nc_cfg->display_use ?? 'all');
+					$hr_nc_is_mobile = class_exists('Mobile') && Mobile::isFromMobilePhone();
+					if ($hr_nc_display === 'pc' && $hr_nc_is_mobile) { $hr_nc_enabled = false; }
+					if ($hr_nc_display === 'mobile' && !$hr_nc_is_mobile) { $hr_nc_enabled = false; }
+					if ($hr_nc_enabled) {
+						$layout_info->use_ncenter_widget = 'Y';
+						$hr_nc_on = true;
+						// 알림센터 "회원 메뉴 표시" 가 미사용이면 전체 알림 목록으로 보내는 링크도 두지 않는다.
+						$hr_nc_show_all = (($hr_nc_cfg->user_config_list ?? 'N') === 'Y');
+						// 회원 모듈에 고정 mid 가 있으면 그 주소로 바로 보낸다 (리다이렉트 한 번 절약)
+						$hr_nc_member_cfg = class_exists('MemberModel') ? MemberModel::getMemberConfig() : null;
+						$hr_nc_member_mid = (is_object($hr_nc_member_cfg) && !empty($hr_nc_member_cfg->mid)) ? (string)$hr_nc_member_cfg->mid : '';
+						$hr_nc_out = getModel('ncenterlite')->getMyNotifyList($logged_info->member_srl);
+						if ($hr_nc_out && !empty($hr_nc_out->data)) {
+							$hr_nc_items = array_slice(is_array($hr_nc_out->data) ? $hr_nc_out->data : [], 0, 8);
+							$hr_nc_unread = (int)($hr_nc_out->page_navigation->total_count ?? 0);
+						}
+					}
+				}
+				@endphp
+				@if ($hr_nc_on)
+				<div class="hr-nc ss-icon">
+					<button type="button" class="hr-nc-btn" aria-label="{{ $lang->hr_notify }}" aria-expanded="false">
+						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2.3 2.3 0 0 0 2.3-2.3H9.7A2.3 2.3 0 0 0 12 22zm7.3-5.3H4.7c-.6 0-.9-.7-.5-1.1l1.5-1.6v-4a6.3 6.3 0 0 1 4.6-6.1V3.3a1.7 1.7 0 1 1 3.4 0v.6a6.3 6.3 0 0 1 4.6 6.1v4l1.5 1.6c.4.4.1 1.1-.5 1.1z"/></svg>
+						@if ($hr_nc_unread > 0)<em class="hr-nc-badge">{{ $hr_nc_unread > 99 ? '99+' : $hr_nc_unread }}</em>@endif
+						<span class="ss-icon-label">{{ $lang->hr_notify }}</span>
+					</button>
+					<div class="hr-nc-panel" hidden>
+						<div class="hr-nc-head">
+							<strong>{{ $lang->hr_notify }}</strong>
+							@if ($hr_nc_unread > 0)<button type="button" class="hr-nc-readall">{{ $lang->hr_notify_read_all }}</button>@endif
+						</div>
+						<ul class="hr-nc-list">
+							@forelse ($hr_nc_items as $hr_nc_item)
+							<li><a href="{{ $hr_nc_item->url }}"><span class="hr-nc-text">{!! $hr_nc_item->text !!}</span><span class="hr-nc-ago">{{ $hr_nc_item->ago }}</span></a></li>
+							@empty
+							<li class="hr-nc-empty">{{ $lang->hr_notify_empty }}</li>
+							@endforelse
+						</ul>
+						@if ($hr_nc_show_all)
+						<a class="hr-nc-all" href="{{ !empty($hr_nc_member_mid) ? getUrl('', 'mid', $hr_nc_member_mid, 'act', 'dispNcenterliteNotifyList') : getUrl('', 'act', 'dispNcenterliteNotifyList') }}">{{ $lang->hr_notify_all }}</a>
+						@endif
+					</div>
+				</div>
+				@endif
+				<a class="ss-icon" href="{{ $ss_shop_mid !== '' ? getUrl('', 'mid', $ss_shop_mid, 'act', 'dispCommerceMyOrders') : getUrl('', 'act', 'dispMemberInfo') }}">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4 0-9 2-9 5.5V22h18v-2.5C21 16 16 14 12 14z"/></svg>
+					<span class="ss-icon-label">{{ $lang->ss_mypage }}</span>
+				</a>
+				@endif
+				@if ($ss_shop_url !== '')
+				<a class="ss-icon" href="{{ getUrl('', 'mid', $ss_shop_mid, 'act', 'dispCommerceCart') }}">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h15l-1.7 8.4a2 2 0 0 1-2 1.6H9.6a2 2 0 0 1-2-1.6L5.5 3.5H2.5v-2h4.6L8 6zm2 12a2 2 0 1 1-2 2 2 2 0 0 1 2-2zm10 0a2 2 0 1 1-2 2 2 2 0 0 1 2-2z"/></svg>
+					@if ($ss_cart_count > 0)<em class="ss-icon-badge">{{ $ss_cart_count > 99 ? '99+' : $ss_cart_count }}</em>@endif
+					<span class="ss-icon-label">{{ $lang->ss_cart }}</span>
+				</a>
+				@endif
+				<button type="button" class="ss-icon ss-burger" id="hr_burger" aria-label="{{ $lang->hr_menu_open }}" aria-expanded="false">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+					<span class="ss-icon-label">{{ $lang->hr_menu }}</span>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="ss-catbar">
+		<div class="hr-inner ss-catbar-inner">
+			@if (count($ss_cats))
+			<div class="ss-catall" id="ss_catall">
+				<button type="button" class="ss-catall-btn" aria-expanded="false">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+					<span>{{ $lang->ss_all_categories }}</span>
+				</button>
+				@php
+				// 1차 카테고리 수에 따라 열 수를 늘린다: 6개까지 3열(2줄), 8개까지 4열, 그 이상 5열.
+				$ss_cat_count = count($ss_cats);
+				$ss_cols = $ss_cat_count <= 6 ? 3 : ($ss_cat_count <= 8 ? 4 : 5);
+				@endphp
+				<div class="ss-catall-panel ss-cols-{{ $ss_cols }}" hidden>
+					<ul class="ss-catall-list ss-cols-{{ $ss_cols }}">
+						@foreach ($ss_cats as $ss_c)
+						<li>
+							<a class="ss-catall-top" href="{{ $ss_shop_url }}{{ $ss_amp }}v=list&amp;category={{ $ss_c->category_srl }}">{{ $ss_c->title }}</a>
+							@if (count($ss_c->kids))
+							<ul class="ss-catall-sub">
+								@foreach ($ss_c->kids as $ss_k)
+								<li><a href="{{ $ss_shop_url }}{{ $ss_amp }}v=list&amp;category={{ $ss_k->category_srl }}">{{ $ss_k->title }}</a></li>
+								@endforeach
+							</ul>
+							@endif
+						</li>
+						@endforeach
+					</ul>
+				</div>
+			</div>
+			@endif
+
+			@if (count($ss_cats))
+			<nav class="ss-cats" aria-label="{{ $lang->ss_all_categories }}">
+				<ul>
+					@foreach (array_slice($ss_cats, 0, 8) as $ss_c)
+					<li class="@if (count($ss_c->kids)) has-sub @endif">
+						<a href="{{ $ss_shop_url }}{{ $ss_amp }}v=list&amp;category={{ $ss_c->category_srl }}">{{ $ss_c->title }}</a>
+						@if (count($ss_c->kids))
+						<ul class="ss-cats-sub">
+							@foreach ($ss_c->kids as $ss_k)
+							<li><a href="{{ $ss_shop_url }}{{ $ss_amp }}v=list&amp;category={{ $ss_k->category_srl }}">{{ $ss_k->title }}</a></li>
+							@endforeach
+						</ul>
+						@endif
+					</li>
+					@endforeach
+				</ul>
+			</nav>
+			@endif
+
+			<nav class="ss-gnb @if (count($ss_cats)) is-side @endif" aria-label="{{ $lang->hr_main_menu }}">
+				<ul>
+					@foreach ($hr_menu as $hr_i => $hr_m)
+					<li class="@if (!empty($hr_m['list'])) has-sub @endif @if (!empty($hr_m['selected']) || !empty($hr_m['open'])) is-on @endif">
+						<a href="{{ $hr_m['href'] }}" @if (($hr_m['open_window'] ?? '') === 'Y') target="_blank" rel="noopener" @endif>{{ $hr_m['text'] }}</a>
+						@if (!empty($hr_m['list']))
+						<ul class="ss-gnb-sub">
+							@foreach ($hr_m['list'] as $hr_c)
+							<li><a href="{{ $hr_c['href'] }}" @if (($hr_c['open_window'] ?? '') === 'Y') target="_blank" rel="noopener" @endif>{{ $hr_c['text'] }}</a></li>
+							@endforeach
+						</ul>
+						@endif
+					</li>
+					@endforeach
+				</ul>
+			</nav>
+		</div>
+	</div>
+
+	<div class="hr-mobile-dim" id="hr_mobile_dim" hidden></div>
+	<div class="hr-mobile" id="hr_mobile" role="dialog" aria-modal="true" aria-label="{{ $lang->hr_menu }}" hidden>
+		<div class="hr-mobile-head">
+			<span class="hr-mobile-title">{{ $hr->logo_text ?: ($site_title ?? '') }}</span>
+			<button type="button" class="hr-mobile-close" id="hr_mobile_close" aria-label="{{ $lang->hr_menu_close }}">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7l1.4-1.4 6.3 6.3 6.3-6.3z"/></svg>
+			</button>
+		</div>
+		<div class="hr-mobile-account">
+			@if ($is_logged)
+			<a class="hr-mobile-account-btn" href="{{ getUrl('', 'act', 'dispMemberInfo') }}">{{ $logged_info->nick_name }}</a>
+			<a class="hr-mobile-account-btn" href="{{ getUrl('', 'act', 'dispMemberLogout') }}">{{ $lang->hr_logout }}</a>
+			@else
+			<a class="hr-mobile-account-btn is-primary" href="{{ getUrl('', 'act', 'dispMemberLoginForm') }}">{{ $lang->hr_login }}</a>
+			<a class="hr-mobile-account-btn" href="{{ getUrl('', 'act', 'dispMemberSignUpForm') }}">{{ $lang->hr_signup }}</a>
+			@endif
+		</div>
+
+		@if (count($ss_cats))
+		<div class="ss-mobile-cats">
+			<p class="ss-mobile-cats-title">{{ $lang->ss_all_categories }}</p>
+			<ul>
+				@foreach ($ss_cats as $ss_c)
+				<li><a href="{{ $ss_shop_url }}{{ $ss_amp }}v=list&amp;category={{ $ss_c->category_srl }}">{{ $ss_c->title }}</a></li>
+				@endforeach
+			</ul>
+		</div>
+		@endif
+
+		<ul class="hr-mobile-list">
+			@foreach ($hr_menu as $hr_i => $hr_m)
+			@php $hr_open = !empty($hr_m['selected']) || !empty($hr_m['open']); @endphp
+			<li class="@if (!empty($hr_m['list'])) has-sub @endif @if ($hr_open) is-on @endif">
+				<a href="{{ $hr_m['href'] }}">{{ $hr_m['text'] }}</a>
+				@if (!empty($hr_m['list']))
+				<button type="button" class="hr-mobile-toggle" aria-label="{{ $lang->hr_sub_menu }}" aria-expanded="{{ $hr_open ? 'true' : 'false' }}">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5z"/></svg>
+				</button>
+				<ul class="hr-mobile-sub" @if (!$hr_open) hidden @endif>
+					@foreach ($hr_m['list'] as $hr_c)
+					<li>
+						<a class="@if (!empty($hr_c['selected'])) is-on @endif" href="{{ $hr_c['href'] }}">{{ $hr_c['text'] }}</a>
+						@if (!empty($hr_c['list']))
+						<ul class="hr-mobile-sub2">
+							@foreach ($hr_c['list'] as $hr_g)
+							<li><a href="{{ $hr_g['href'] }}">{{ $hr_g['text'] }}</a></li>
+							@endforeach
+						</ul>
+						@endif
+					</li>
+					@endforeach
+				</ul>
+				@endif
+			</li>
+			@endforeach
+		</ul>
+
+		<div class="hr-mobile-tools">
+			@if ($is_logged && $logged_info->is_admin == 'Y')
+			<a class="hr-mobile-tool" href="{{ getUrl('', 'module', 'admin') }}" target="_blank">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13a7.9 7.9 0 0 0 0-2l2.1-1.6a.5.5 0 0 0 .1-.6l-2-3.5a.5.5 0 0 0-.6-.2l-2.5 1a7.3 7.3 0 0 0-1.7-1l-.4-2.7a.5.5 0 0 0-.5-.4h-4a.5.5 0 0 0-.5.4l-.4 2.7a7.3 7.3 0 0 0-1.7 1l-2.5-1a.5.5 0 0 0-.6.2l-2 3.5a.5.5 0 0 0 .1.6L4.4 11a7.9 7.9 0 0 0 0 2l-2.1 1.6a.5.5 0 0 0-.1.6l2 3.5a.5.5 0 0 0 .6.2l2.5-1a7.3 7.3 0 0 0 1.7 1l.4 2.7a.5.5 0 0 0 .5.4h4a.5.5 0 0 0 .5-.4l.4-2.7a7.3 7.3 0 0 0 1.7-1l2.5 1a.5.5 0 0 0 .6-.2l2-3.5a.5.5 0 0 0-.1-.6zM12 15.5A3.5 3.5 0 1 1 15.5 12 3.5 3.5 0 0 1 12 15.5z"/></svg>
+				<span>{{ $lang->hr_admin }}</span>
+			</a>
+			<a class="hr-mobile-tool" href="{{ getUrl('', 'module', 'commerce', 'act', 'dispCommerceConsole') }}" target="_blank">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16l-1.5 9.5a2 2 0 0 1-2 1.7H7.6a2 2 0 0 1-2-1.6L4 4zm2.3 2 1.2 7.2h9.1L17.7 6H6.3zM8 17.5A1.75 1.75 0 1 1 8 21a1.75 1.75 0 0 1 0-3.5zm8 0a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5z"/></svg>
+				<span>{{ $lang->hr_shop_admin }}</span>
+			</a>
+			<a class="hr-mobile-tool" href="{{ getUrl('', 'module', 'admin', 'act', 'dispZittme_payAdminConfig') }}" target="_blank">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6zm2 3v2h14V9H5zm0 4v5h14v-5H5zm2 2h5v1.6H7V15z"/></svg>
+				<span>{{ $lang->hr_pay_admin }}</span>
+			</a>
+			@endif
+
+			@if ($hr_scheme === 'auto' && ($hr->mobile_theme_pos ?? 'drawer') === 'drawer')
+			<button type="button" class="hr-mobile-tool" data-hr-theme-toggle>
+				<svg class="hr-ico-sun" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-6 1 3h-2l1-3zm0 19 1 3h-2l1-3zM2 12l3-1v2l-3-1zm17-1 3 1-3 1v-2zM4.2 4.2l2.6 1.6-1 1-1.6-2.6zm13 13 2.6 1.6-1.6-2.6-1 1zm2.6-13-1.6 2.6-1-1 2.6-1.6zM4.2 19.8l1.6-2.6 1 1-2.6 1.6z"/></svg>
+				<svg class="hr-ico-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.3 13.8A8.5 8.5 0 0 1 10.2 3.7 8.5 8.5 0 1 0 20.3 13.8z"/></svg>
+				<span>{{ $lang->hr_theme_toggle }}</span>
+			</button>
+			@endif
+
+			@if (count($hr_langs) > 1 && ($hr->mobile_lang_pos ?? 'drawer') === 'drawer')
+			<div class="hr-mobile-tool hr-mobile-lang">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 2c1.4 0 2.8 2.4 3.4 6H8.6C9.2 6.4 10.6 4 12 4zM8.2 10h7.6a18 18 0 0 1 0 4H8.2a18 18 0 0 1 0-4zm-2 0a20 20 0 0 0 0 4H4.3a8 8 0 0 1 0-4h1.9zm11.6 0h1.9a8 8 0 0 1 0 4h-1.9a20 20 0 0 0 0-4zM8.6 16h6.8c-.6 3.6-2 6-3.4 6s-2.8-2.4-3.4-6z"/></svg>
+				<select id="hr_mobile_lang" aria-label="{{ $lang->hr_lang_select }}">
+					@foreach ($hr_langs as $hr_lang_code => $hr_lang_name)
+					<option value="{{ $hr_lang_uri }}{{ $hr_lang_sep }}l={{ $hr_lang_code }}" @if ($hr_lang_code === $hr_lang_now) selected @endif>{{ $hr_lang_name }}</option>
+					@endforeach
+				</select>
+			</div>
+			@endif
+		</div>
+	</div>
+</header>
+
+<script>
+(function () {
+	var wrap = document.getElementById('ss_catall');
+	if (!wrap) return;
+	var btn = wrap.querySelector('.ss-catall-btn');
+	var panel = wrap.querySelector('.ss-catall-panel');
+	var open = function (on) {
+		panel.hidden = !on;
+		btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+		wrap.classList.toggle('is-open', on);
+	};
+	btn.addEventListener('click', function () { open(panel.hidden); });
+	wrap.addEventListener('mouseenter', function () { if (window.innerWidth > 860) open(true); });
+	wrap.addEventListener('mouseleave', function () { if (window.innerWidth > 860) open(false); });
+	document.addEventListener('click', function (e) { if (!wrap.contains(e.target)) open(false); });
+	document.addEventListener('keydown', function (e) { if (e.key === 'Escape') open(false); });
+})();
+</script>

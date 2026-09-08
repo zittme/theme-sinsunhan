@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<skin version="0.2">
+	<title xml:lang="ko">신선한</title>
+	<title xml:lang="en">Sinsunhan</title>
+	<description xml:lang="ko">신선한 테마의 커머스 스킨입니다. 할인 표기에 따뜻한 주황을 씁니다.</description>
+	<description xml:lang="en">Commerce skin of the Sinsunhan theme.</description>
+	<version>1.0.0</version>
+	<date>2026-09-04</date>
+	<author email_address="zittme-contact@zzan.me" link="https://zitt.me">
+		<name xml:lang="ko">ZZAN Studio</name>
+		<name xml:lang="en">ZZAN Studio</name>
+	</author>
+	<responsive>true</responsive>
+</skin>

@@ -1,7 +1,6 @@
 @charset "utf-8";
 /* 독립 화면(레이아웃 밖)이라 웹폰트를 직접 불러온다 */
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
-/* 신선한 테마 시스템 메시지 스킨 — 레이아웃 밖에서도 스스로 완결되게 스타일링한다 */
 :root {
 	--zm-brand: #1f6b4a;
 	--zm-brand-hover: #17513a;

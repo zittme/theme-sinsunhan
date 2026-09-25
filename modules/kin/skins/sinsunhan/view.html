@@ -92,7 +92,6 @@
 			</span>
 		</div>
 
-		{{-- 질문에 단 댓글 --}}
 		<section class="zmk-qcmt">
 			<div class="zmk-qcmt-head">
 				<h3 class="zmk-section-title">{{ $lang->kin_question_comments }} <b>{{ count($oDocument->getComments() ?: []) }}</b></h3>
@@ -141,7 +140,6 @@
 		</section>
 	</article>
 
-	{{-- 답변 --}}
 	<section class="zmk-answers">
 		<div class="zmk-answers-head">
 			<h2 class="zmk-section-title">{{ $lang->kin_answers }} <b>{{ count($kin_answers) }}</b></h2>
@@ -240,7 +238,6 @@
 				@endif
 			</div>
 
-			{{-- 답변에 단 댓글. 접어 두었다가 펼친다 --}}
 			<div class="zmk-answer-cmts">
 				<button type="button" class="zmk-link-btn zmk-cmt-toggle" onclick="zmkToggleForm('zmk_cmts_{{ $answer->document_srl }}')">{{ $lang->kin_toggle_comments }} <b>{{ count($answer->getComments() ?: []) }}</b></button>
 
@@ -289,7 +286,6 @@
 </div>
 
 <script>
-// 의견 영역은 접어 두었다가 버튼으로 펼친다. 펼치면 바로 쓸 수 있게 포커스를 준다.
 function zmkToggleForm(id) {
 	var form = document.getElementById(id);
 	if (!form) return;
@@ -317,7 +313,6 @@ function zmkAccept(answerSrl) {
 	});
 }
 
-// 의견을 쓰고 돌아오면 주소의 앵커(#zmk_cmts_*)가 그 의견 영역을 가리킨다.
 // 접힌 채로 두면 방금 쓴 의견이 안 보이므로 펼쳐서 보여 준다.
 (function () {
 	var hash = String(location.hash || '');

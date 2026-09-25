@@ -1,10 +1,3 @@
-/**
- * 짓미 페이 — 결제 화면.
- *
- * 이 파일은 결제수단별 분기를 최소한으로만 갖는다. "결제창이 필요한가" 는 서버가
- * requires_client 로 알려 주고, 결제창에 넘길 값도 서버가 만들어 준다.
- * 새 PG 를 붙일 때 이 파일을 고칠 일이 없어야 한다.
- */
 (function() {
 	'use strict';
 
@@ -90,9 +83,6 @@
 		return checked ? checked.value : '';
 	}
 
-	/**
-	 * 결제수단을 고를 때마다 화면을 맞춘다.
-	 */
 	function onSelect() {
 		var name = selectedGateway();
 
@@ -144,7 +134,6 @@
 				setBusy(false);
 				return;
 			}
-			// 이니시스는 폼 POST 방식이라 숨은 폼을 만들어 넘긴다
 			var oldForm = document.getElementById('zpay-inicis-form');
 			if (oldForm) {
 				oldForm.parentNode.removeChild(oldForm);
@@ -172,7 +161,6 @@
 				setBusy(false);
 				return;
 			}
-			// KCP 도 폼 방식이라 숨은 폼을 만들어 넘긴다
 			var oldKcpForm = document.getElementById('zpay-kcp-form');
 			if (oldKcpForm) {
 				oldKcpForm.parentNode.removeChild(oldKcpForm);
@@ -280,7 +268,6 @@
 				openPaymentWindow(gatewayName, data.request);
 				return;
 			}
-			// 서버에서 처리가 끝난 결제수단은 결과 화면 주소를 돌려준다.
 			window.location.href = data.redirect_url || './';
 		}).catch(function(error) {
 			showError(error.message || 'error');
@@ -293,11 +280,10 @@
 	});
 	submit.addEventListener('click', onSubmit);
 
-	// 결제수단이 하나뿐이면 미리 골라 둔다.
 	if (methods.length === 1) {
 		methods[0].checked = true;
 	}
 	onSelect();
 
-	} // init
+	}
 })();

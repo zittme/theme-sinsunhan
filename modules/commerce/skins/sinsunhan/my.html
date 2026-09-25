@@ -13,7 +13,6 @@
 		];
 		@endphp
 
-		{{-- 요약 카드 --}}
 		<div class="shp-my-summary" role="list" aria-label="{{ $lang->shop_my_summary }}">
 			@if (!empty($my_grade))
 			<div class="shp-my-tile" role="listitem">
@@ -36,14 +35,12 @@
 			</button>
 		</div>
 
-		{{-- 탭 메뉴 --}}
 		<div class="shp-my-tabs" role="tablist">
 			@foreach ($shp_my_tabs as $shp_tk => $shp_tv)
 			<button type="button" class="shp-my-tab @if ($shp_tk === 'orders') is-on @endif" role="tab" data-shp-tab="{{ $shp_tk }}" aria-selected="{{ $shp_tk === 'orders' ? 'true' : 'false' }}">{{ $shp_tv }}</button>
 			@endforeach
 		</div>
 
-		{{-- 탭: 주문 내역 --}}
 		<div class="shp-my-panel" id="shpMyPanel-orders" role="tabpanel">
 			@if (empty($orders))
 			<p class="shp-empty">{{ $lang->shop_no_orders }}</p>
@@ -101,7 +98,6 @@
 			@endif
 		</div>
 
-		{{-- 탭: 적립금 --}}
 		<div class="shp-my-panel" id="shpMyPanel-credit" role="tabpanel" hidden>
 			<div class="shp-summary" style="margin-bottom:14px">
 				<div class="shp-summary-row is-total"><span>{{ $lang->shop_credit_balance }}</span><span>{{ shop_money_base($credit_balance) }}</span></div>
@@ -125,7 +121,6 @@
 			@endif
 		</div>
 
-		{{-- 탭: 쿠폰 --}}
 		<div class="shp-my-panel" id="shpMyPanel-coupons" role="tabpanel" hidden>
 			@if (!count($my_coupons ?? []))
 			<p class="shp-empty">{{ $lang->shop_no_coupons }}</p>
@@ -184,9 +179,9 @@
 		})();
 		</script>
 
-		{{-- 하단: 회원정보 수정 --}}
 		<div class="shp-my-foot">
 			<a class="shp-btn" href="{{ getUrl('', 'act', 'dispMemberModifyInfo') }}">{{ $lang->shop_edit_profile }}</a>
+			@if (!empty($seller_apply_link))<a class="shp-btn" href="{{ getUrl('', 'mid', $mid, 'act', 'dispCommerceSellerApply') }}">{{ $lang->mk_apply_title }}</a>@endif
 			<a class="shp-btn" href="{{ getUrl('', 'mid', $mid, 'act', 'dispCommerceList') }}">{{ $lang->shop_back_list }}</a>
 		</div>
 	@else

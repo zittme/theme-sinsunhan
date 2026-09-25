@@ -71,7 +71,6 @@ foreach ($hr_ft_sns as $hr_ft_s) { if ($hr_ft_s['url'] !== '') { $hr_ft_has_sns 
 
 		<div class="hr-footer-bottom">
 			<span>{{ $hr->copyright ?: ('© ' . ($site_title ?? '')) }}</span>
-			{{-- 모바일 위치 옵션이 '푸터'일 때만 보이는 다크모드·언어 컨트롤 --}}
 			@php
 			$hr_ft_langs = \Context::get('lang_supported');
 			$hr_ft_langs = is_array($hr_ft_langs) ? $hr_ft_langs : [];

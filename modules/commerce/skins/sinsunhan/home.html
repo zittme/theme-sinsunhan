@@ -118,7 +118,22 @@
 	@php
 	$ss_tiles = array_values(array_filter($shop_categories ?? [], function($c) { return (int)($c->depth ?? 0) === 0; }));
 	$ss_icon_map = [];
-	foreach (array_values((array)($layout_info->cat_icons ?? [])) as $ss_ic)
+	$ss_icon_rows = $layout_info->cat_icons ?? null;
+	if (is_string($ss_icon_rows))
+	{
+		$ss_icon_rows = json_decode($ss_icon_rows, true);
+	}
+	$ss_icon_rows = is_array($ss_icon_rows) ? array_values($ss_icon_rows) : (is_object($ss_icon_rows) ? array_values((array)$ss_icon_rows) : []);
+	$ss_props = is_object($layout_info) ? get_object_vars($layout_info) : [];
+	if (!count($ss_icon_rows) && count($ss_props))
+	{
+		for ($ss_i = 1; $ss_i <= 6; $ss_i++)
+		{
+			if (trim((string)($ss_props['cat_icon_' . $ss_i . '_cat_title'] ?? '')) === '') { continue; }
+			$ss_icon_rows[] = ['cat_title' => $ss_props['cat_icon_' . $ss_i . '_cat_title'], 'icon_image' => (string)($ss_props['cat_icon_' . $ss_i . '_icon_image'] ?? ''), 'icon_text' => (string)($ss_props['cat_icon_' . $ss_i . '_icon_text'] ?? '')];
+		}
+	}
+	foreach ($ss_icon_rows as $ss_ic)
 	{
 		$ss_ic = (array)$ss_ic;
 		$ss_ic_key = trim((string)($ss_ic['cat_title'] ?? ''));
@@ -131,7 +146,23 @@
 	@if (count($ss_tiles))
 	<nav class="ss-tiles" aria-label="{{ $lang->shop_category }}">
 		@foreach (array_slice($ss_tiles, 0, 10) as $ss_t)
-		@php $ss_ic = $ss_icon_map[trim((string)$ss_t->title)] ?? null; @endphp
+		@php
+		$ss_ic = null;
+		$ss_t_raw = (string)($ss_t->title_raw ?? $ss_t->title);
+		$ss_t_keys = [(string)(int)$ss_t->category_srl, trim($ss_t_raw), trim(\Context::replaceUserLang($ss_t_raw))];
+		if (preg_match('/\\$' . 'user_lang-' . chr(62) . '([A-Za-z0-9_]+)/', $ss_t_raw, $ss_m))
+		{
+			$ss_lout = executeQueryArray('module.getLangListByName', (object)['name' => $ss_m[1]]);
+			foreach (($ss_lout->toBool() ? ($ss_lout->data ?: []) : []) as $ss_lrow)
+			{
+				$ss_t_keys[] = trim((string)($ss_lrow->value ?? ''));
+			}
+		}
+		foreach ($ss_t_keys as $ss_k)
+		{
+			if ($ss_k !== '' && $ss_k !== '0' && isset($ss_icon_map[$ss_k])) { $ss_ic = $ss_icon_map[$ss_k]; break; }
+		}
+		@endphp
 		<a href="{{ getUrl('', 'mid', $mid, 'v', 'list', 'category', $ss_t->category_srl) }}">
 			@if (!empty($ss_ic['icon_image']))
 			<span class="ss-tile-mark has-img"><img src="{{ $ss_ic['icon_image'] }}" alt="" loading="lazy" /></span>
@@ -165,7 +196,7 @@
 				</div>
 				<div class="shp-promo-cards">
 					@foreach ($home_promotions as $shp_pm)
-					<a class="shp-promo-card" href="{{ getUrl('', 'mid', $mid, 'v', 'promo', 'p', $shp_pm->slug) }}" style="{{ $shp_pm->banner_data['bg_style'] ?? '' }}">
+					<a class="shp-promo-card align-{{ in_array($shp_pm->banner_data['align'] ?? 'left', ['center', 'right'], true) ? $shp_pm->banner_data['align'] : 'left' }}" href="{{ getUrl('', 'mid', $mid, 'v', 'promo', 'p', $shp_pm->slug) }}" style="{{ $shp_pm->banner_data['bg_style'] ?? '' }}">
 						<span class="shp-promo-card-copy {{ ($shp_pm->banner_data['shadow'] ?? 'Y') === 'N' ? 'no-shadow' : '' }}" style="color:{{ $shp_pm->banner_data['text_color'] ?? '#ffffff' }}">
 							<strong>{!! $shp_pm->banner_data['title_html'] ?? escape($shp_pm->title) !!}</strong>
 							@if (!empty($shp_pm->banner_data['text']))<span>{!! $shp_pm->banner_data['text_html'] ?? escape($shp_pm->banner_data['text']) !!}</span>@endif
@@ -188,7 +219,7 @@
 				</div>
 				<div class="shp-grid">
 					@foreach ($section->items as $it)
-					<a class="shp-card" href="{{ getUrl('', 'mid', $mid, 'act', 'dispCommerceItem', 'item_srl', $it->item_srl) }}">
+					<a class="shp-card" href="{{ !empty($it->item_url) ? $it->item_url : getUrl('', 'mid', $mid, 'act', 'dispCommerceItem', 'item_srl', $it->item_srl) }}">
 						<span class="shp-card-thumb" @if (!empty($it->thumb)) style="background-image:url('{{ escape($it->thumb) }}')" @endif>
 							@if (empty($it->thumb))<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 11l2.5 3 3.5-4.5L19 16H5z"/></svg>@endif
 						</span>
@@ -207,6 +238,7 @@
 								@if ($it->is_new === 'Y')<span class="shp-badge">NEW</span>@endif
 							</span>
 							<span class="shp-card-name">{{ $it->item_name }}</span>
+							@if (!empty($it->seller_name) && ($shop_config->show_seller_on_card ?? 'Y') !== 'N')<span class="shp-card-seller">{{ $it->seller_name }}</span>@endif
 							@if (!empty($it->review_count))
 							<span class="shp-card-rating">
 								<svg width="12" height="12" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.9L12 17.8 5.8 21.1 7 14.2 2 9.3l6.9-1L12 2z"/></svg>
@@ -229,6 +261,7 @@
 								<strong>{{ shop_item_price($it, 'price') }}</strong>
 								@endif
 							</span>
+							@if (function_exists('shop_timesale_badge')){!! shop_timesale_badge($it) !!}@endif
 						</span>
 					</a>
 					@endforeach
@@ -277,7 +310,6 @@
 
 <script>
 (function () {
-	// 상단 카테고리 메뉴 펼치기
 	var btn = document.getElementById('shpCatBtn');
 	var panel = document.getElementById('shpCatPanel');
 	if (!btn || !panel) return;

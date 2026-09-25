@@ -8,7 +8,7 @@
 ## 요구 사항
 
 - Zittme 1.0.0 이상
-- [commerce](https://github.com/zittme/commerce) 0.2.17 이상 권장. 커머스 · 예약 · 짓미페이 · 문의 · 지식질문 등 부가 모듈 스킨은 해당 모듈이 설치된 사이트에서만 적용됩니다.
+- [commerce](https://github.com/zittme/commerce) 1.1.0 이상 권장. 커머스 · 예약 · 짓미페이 · 문의 · 지식질문 등 부가 모듈 스킨은 해당 모듈이 설치된 사이트에서만 적용됩니다.
 
 ## 설치
 

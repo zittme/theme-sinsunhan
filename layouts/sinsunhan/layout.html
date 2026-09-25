@@ -64,7 +64,52 @@ if (!$hr_has_class_type && in_array($hr_module_now, $hr_full_modules, true)) {
 // 신선한 테마는 서브페이지 LNB 를 쓰지 않는다 — 서브도 항상 본문 전체 폭
 $hr_lnb = null;
 
-$hr_visuals = array_map(function($hr_nv) { return is_array($hr_nv) ? $hr_nv : (array)$hr_nv; }, array_values((array)($hr->visuals ?? [])));
+if (!function_exists('ss_repeat_items'))
+{
+	function ss_repeat_items($cfg, string $name, array $fields, int $slots = 0, string $prefix = '', string $key_field = ''): array
+	{
+		$props = is_object($cfg) ? get_object_vars($cfg) : [];
+		$raw = $props[$name] ?? null;
+		if (is_string($raw) && trim($raw) !== '')
+		{
+			$decoded = json_decode($raw, true);
+			$raw = is_array($decoded) ? $decoded : null;
+		}
+		$items = [];
+		foreach (is_array($raw) ? $raw : (is_object($raw) ? (array)$raw : []) as $row)
+		{
+			$row = (array)$row;
+			if (isset($row['_visible']) && !$row['_visible'])
+			{
+				continue;
+			}
+			if ((!empty($row['_start_date']) && date('YmdHis') < $row['_start_date']) || (!empty($row['_end_date']) && date('YmdHis') > $row['_end_date']))
+			{
+				continue;
+			}
+			$items[] = $row;
+		}
+		if (count($items) || !empty($raw) || $slots < 1 || !count($props))
+		{
+			return $items;
+		}
+		for ($i = 1; $i <= $slots; $i++)
+		{
+			$row = [];
+			foreach ($fields as $field)
+			{
+				$row[$field] = (string)($props[$prefix . '_' . $i . '_' . $field] ?? '');
+			}
+			if ($key_field !== '' && trim($row[$key_field]) === '')
+			{
+				continue;
+			}
+			$items[] = $row;
+		}
+		return $items;
+	}
+}
+$hr_visuals = ss_repeat_items($hr, 'visuals', ['image', 'title', 'text', 'link_text', 'link_url', 'align'], 5, 'visual', 'image');
 // 슬라이드를 하나도 등록하지 않았으면 상점(커머스) 홈 배너를 대문 슬라이더로 승계한다
 if (!count($hr_visuals))
 {
@@ -154,7 +199,6 @@ $hr_footer_info = array_values(array_filter(array_map('trim', explode("\n", (str
 
 	@include('_footer')
 
-	{{-- 모바일 하단 탭바 (860px 이하에서만 표시) --}}
 	@php $hr_tab_shop = $ss_shop_mid ?? ''; @endphp
 	<nav class="ss-tabbar" aria-label="{{ $lang->hr_main_menu }}">
 		<a href="{{ getUrl('') }}">
@@ -182,7 +226,6 @@ $hr_footer_info = array_values(array_filter(array_map('trim', explode("\n", (str
 		</a>
 	</nav>
 
-	{{-- 하단 탭바용 바텀시트: 상점 카테고리 / 상점 검색 --}}
 	<div class="ss-sheet-dim" id="ss_sheet_dim" hidden></div>
 
 	<div class="ss-sheet" id="ss_sheet_cats" role="dialog" aria-modal="true" aria-label="{{ $lang->ss_all_categories }}" hidden>

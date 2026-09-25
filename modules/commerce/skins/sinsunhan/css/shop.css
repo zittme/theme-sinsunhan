@@ -95,7 +95,6 @@
 	.shp-table { display: block; overflow-x: auto; }
 	.shp-title { font-size: 21px; }
 
-	/* 분류와 정렬은 언어에 따라 문구가 길어진다. 접어 내리지 말고 옆으로 넘겨 본다 */
 	.shp-cats, .shp-sort {
 		flex-wrap: nowrap;
 		overflow-x: auto;
@@ -127,7 +126,6 @@
 .shp-card, .shp-table, .shp-summary, .shp-form fieldset, .shp-detail-list, .shp-btn-ghost,
 .shp-filter select, .shp-filter input, .shp-filter button { background-color: var(--shp-card); }
 
-/* 어두운 판의 색은 위에서 물려받은 hr 토큰이 알아서 바뀐다. 레이아웃 밖에서 쓰일 때만 여기 값이 쓰인다 */
 :is([data-theme="dark"], body.color_scheme_dark) .shp {
 	--shp-brand-soft: var(--hr-brand-soft, rgba(95, 191, 144, .16));
 	--shp-border: var(--hr-line, #2b3630);
@@ -481,7 +479,6 @@ html { scroll-behavior: smooth; }
 .shp .shp-row input[type=checkbox] { width: 16px !important; height: 16px; accent-color: var(--shp-brand, #2677e3); margin: 0; }
 .shp .shp-save-addr { display: inline-flex !important; align-items: center; gap: 7px; font-weight: 500; font-size: 13px; cursor: pointer; }
 
-/* 옵션·추가상품 안내 (ⓘ 롤오버) */
 .shp .shp-row label { display: inline-flex; align-items: center; gap: 5px; }
 .shp-opt-tip { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px; padding: 0; border: 0; border-radius: 50%; background: none; color: #98a1ad; cursor: help; }
 .shp-opt-tip:hover, .shp-opt-tip:focus { color: var(--shp-brand); }
@@ -528,7 +525,6 @@ html { scroll-behavior: smooth; }
 }
 
 
-/* 쇼핑 홈 상단 카테고리 (가장 강조되는 진입점) */
 .shp-home-nav { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; }
 .shp-catbtn {
 	display: inline-flex;
@@ -587,7 +583,6 @@ html { scroll-behavior: smooth; }
 	.shp-catbtn { font-size: 15px; padding: 9px 16px; }
 }
 
-/* 목록 카테고리 칩 (셀렉트 대체) */
 .shp-cats { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
 .shp-cat {
 	display: inline-flex;
@@ -612,7 +607,6 @@ html { scroll-behavior: smooth; }
 .shp-cats-sub .shp-cat { padding: 6px 13px; font-size: 13px; border-radius: 8px; }
 .shp-cats-sub .shp-cat.is-on { background: var(--shp-brand-soft); color: var(--shp-brand); }
 
-/* 조합형 옵션 축 선택 */
 .shp-axes { margin-bottom: 4px; }
 .shp-axes .shp-row { margin-bottom: 10px; }
 .shp-axis-row label { display: flex; align-items: baseline; gap: 2px; }
@@ -652,7 +646,6 @@ html { scroll-behavior: smooth; }
 .shp-currency-bar ~ .shp-cart-link:first-of-type { margin-left: 0; }
 .shpRvFile::file-selector-button { padding: 7px 14px; margin-right: 8px; border: 1px solid #d5dae1; border-radius: 8px; background: #fff; color: #333d4b; font-size: 12.5px; font-weight: 700; cursor: pointer; }
 
-/* 등급 할인으로 낮아진 값임을 알리는 표시 */
 .shp-grade-tag { display: inline-block; margin-left: 6px; padding: 2px 7px; border-radius: 999px; background: var(--shp-brand-soft); color: var(--shp-brand); font-size: 11.5px; font-weight: 700; font-style: normal; vertical-align: middle; }
 
 /*
@@ -707,7 +700,6 @@ html { scroll-behavior: smooth; }
 	cursor: pointer;
 }
 
-/* 결제가 끝나지 않은 주문 안내 */
 .shp-pending-box { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; padding: 14px 16px; border: 1px solid #f0c36d; border-radius: 6px; background: #fdf6e6; }
 .shp-pending-msg { flex: 1 1 260px; margin: 0; font-size: 13.5px; line-height: 1.6; color: #8a6100; }
 .shp-pending-row td { background: #fdf6e6; }
@@ -716,10 +708,8 @@ html { scroll-behavior: smooth; }
 :is([data-theme="dark"], body.color_scheme_dark) .shp-pending-msg { color: #e8c987; }
 :is([data-theme="dark"], body.color_scheme_dark) .shp-pending-row td { background: rgba(240, 195, 109, .1); }
 
-/* ============ 신선한: 쇼핑몰 화면 ============ */
 .shp { padding-top: 4px; }
 
-/* 카드 — 테두리 없이 썸네일이 주인공, 정보는 아래에 왼쪽 정렬로 쌓는다 */
 .shp-grid { gap: 34px 20px; }
 .shp-card { border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
 .shp-card:hover { border-color: transparent; box-shadow: none; transform: none; }
@@ -740,12 +730,10 @@ html { scroll-behavior: smooth; }
 .shp-card-name { font-size: 15px; font-weight: 500; line-height: 1.45; letter-spacing: -.01em; }
 .shp-card:hover .shp-card-name { color: var(--shp-brand); }
 
-/* 가격 — 할인가가 가장 크고, 할인율을 그 앞에 둔다 */
 .shp-price { gap: 0 8px; align-items: baseline; font-size: 17px; font-weight: 800; letter-spacing: -.02em; }
-.shp-price s { order: 3; font-size: 13px; font-weight: 400; }
+.shp-price s { font-size: 13px; font-weight: 400; }
 .shp-off { order: 1; color: var(--shp-sale); font-size: 17px; font-weight: 800; }
 
-/* 배지 — 썸네일 위로 올린다 */
 .shp-card { position: relative; }
 .shp-card .shp-badges { position: absolute; top: 10px; left: 10px; z-index: 2; flex-direction: column; align-items: flex-start; gap: 5px; }
 .shp-badge {
@@ -760,13 +748,11 @@ html { scroll-behavior: smooth; }
 
 .shp-soldout-cover { border-radius: var(--hr-radius, 14px); font-weight: 700; letter-spacing: .02em; }
 
-/* 목록 머리 — 제목과 개수, 정렬을 한 줄에 */
 .shp-top { align-items: baseline; margin-bottom: 22px; padding-bottom: 16px; border-bottom: 2px solid var(--shp-text); }
 .shp-title { font-size: 26px; font-weight: 800; letter-spacing: -.03em; }
 .shp-sort a { padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; }
 .shp-sort a.is-on { background: var(--shp-text); color: var(--hr-bg, #fff); }
 
-/* 분류 칩 */
 .shp-cats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 .shp-cats a {
 	padding: 9px 16px; border: 1px solid var(--shp-border); border-radius: 999px;
@@ -775,7 +761,6 @@ html { scroll-behavior: smooth; }
 .shp-cats a:hover { border-color: var(--shp-brand); color: var(--shp-brand); }
 .shp-cats a.is-on { border-color: var(--shp-brand); background: var(--shp-brand); color: #fff; }
 
-/* 홈 섹션 제목 */
 .shp-sec-head { display: flex; align-items: baseline; gap: 12px; margin: 44px 0 20px; }
 .shp-sec-head h2 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -.03em; }
 .shp-sec-head p { margin: 0; font-size: 14px; color: var(--shp-sub); }
@@ -792,11 +777,9 @@ html { scroll-behavior: smooth; }
 	.shp-title { font-size: 21px; }
 }
 
-/* 홈 — 헤더가 이미 카테고리·장바구니를 들고 있으므로 본문 상단 줄은 접는다 */
 .shp-home-nav, .shp-catpanel, .shp-catbtn { display: none !important; }
 .shp-top:has(.shp-home-nav) { justify-content: flex-end; border-bottom: 0; margin-bottom: 8px; padding-bottom: 0; }
 
-/* 카테고리 타일 */
 .ss-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 10px; margin: 26px 0 6px; }
 .ss-tiles a { display: flex; flex-direction: column; align-items: center; gap: 9px; padding: 18px 6px; border-radius: var(--hr-radius, 14px); background: var(--shp-bg); transition: background .15s, transform .15s; }
 .ss-tiles a:hover { background: var(--shp-brand-soft); transform: translateY(-2px); }
@@ -812,14 +795,12 @@ html { scroll-behavior: smooth; }
 .ss-tile-name { font-size: 13px; font-weight: 600; color: var(--shp-text); text-align: center; line-height: 1.35; }
 .ss-tiles a:hover .ss-tile-name { color: var(--shp-brand); }
 
-/* 홈 섹션 */
 .shp-home-section { margin-top: 46px; }
 .shp-home-section-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 18px; }
 .shp-home-section-head h2, .shp-home-section-head h3 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -.03em; }
 .shp-home-section-head a { margin-left: auto; font-size: 13.5px; font-weight: 600; color: var(--shp-sub); }
 .shp-home-section-head a:hover { color: var(--shp-brand); }
 
-/* 홈 배너 — 라운드와 높이를 신선한 기준으로 */
 .shp-home-banner { border-radius: var(--hr-radius, 14px); margin-bottom: 8px; }
 .shp-home-banner-track { height: clamp(200px, 24vw, 300px); }
 
@@ -832,13 +813,12 @@ html { scroll-behavior: smooth; }
 	.shp-home-section-head h2, .shp-home-section-head h3 { font-size: 19px; }
 }
 
-/* 상세 — 사진을 크게, 구매 영역은 여백을 넓혀 읽기 쉽게 */
 .shp-detail { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 44px; margin-bottom: 44px; }
 .shp-detail-thumb { border: 0; border-radius: var(--hr-radius, 14px); box-shadow: inset 0 0 0 1px rgba(22, 32, 27, .06); }
 .shp-detail-info h1 { font-size: 27px; font-weight: 800; letter-spacing: -.03em; line-height: 1.35; }
 .shp-detail-summary { font-size: 14.5px; }
 .shp-detail-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; margin: 18px 0 22px; padding-bottom: 22px; border-bottom: 1px solid var(--shp-border); font-size: 30px; letter-spacing: -.03em; }
-.shp-detail-price s { order: 3; margin-right: 0; font-size: 16px; color: var(--shp-sub); opacity: .7; }
+.shp-detail-price s { margin-right: 0; font-size: 16px; color: var(--shp-sub); opacity: .7; }
 .shp-detail-price .shp-off { order: 1; font-size: 30px; }
 .shp-detail-list { grid-template-columns: 108px 1fr; border: 0; border-radius: var(--hr-radius, 14px); background: var(--shp-bg); }
 .shp-detail-list dt { font-weight: 500; }
@@ -856,7 +836,6 @@ html { scroll-behavior: smooth; }
 	.shp-detail-price .shp-off { font-size: 25px; }
 }
 
-/* 장바구니·주문서 — 표를 카드로, 요약을 오른쪽에 고정 */
 .shp-table { border: 0; border-radius: var(--hr-radius, 14px); overflow: hidden; }
 .shp-table thead th { background: var(--shp-bg); border-bottom: 0; font-size: 12.5px; font-weight: 700; color: var(--shp-sub); }
 .shp-table tbody td { border-color: var(--shp-border); }
@@ -933,7 +912,6 @@ html { scroll-behavior: smooth; }
 	.shp .shp-cats::-webkit-scrollbar, .shp .shp-sort::-webkit-scrollbar { display: none; width: 0; height: 0; }
 }
 
-/* 마이쇼핑 — 요약 타일 + 탭 */
 .shp-my-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 0 0 20px; }
 .shp-my-tile {
 	display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
@@ -972,18 +950,49 @@ html { scroll-behavior: smooth; }
 }
 
 .shp-ship-info.shp-credit-info { border-bottom: 0; margin-bottom: 0; }
-/* 구매 버튼과 배송·신선·교환 안내 사이 여백 */
 .shp-actions + .ss-guide, .ss-guide { margin-top: 18px; }
 .shp-detail-price { margin-bottom: 0; }
 .shp-detail-price + .shp-ship-info,
 .shp-detail-price + .shp-ship-info.shp-credit-info { border-top: 0; }
 
-/* 배너 포인트 이미지를 왼쪽에 둘 때 */
 .shp-home-banner-point.is-left { right: auto; left: 5%; background-position: center left; }
 .shp-promo-card-point.is-left { right: auto; left: 4%; background-position: center left; }
 
-/* 주문 내역 상태 필터 */
 .shp-my-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
 .shp-my-filter button { padding: 6px 12px; border: 1px solid var(--shp-border, #e4e6e0); border-radius: 999px; background: var(--shp-card, #fff); font-size: 13px; color: var(--shp-text, #222); cursor: pointer; }
 .shp-my-filter button.is-on { border-color: var(--shp-brand); background: var(--shp-brand); color: #fff; }
 .shp-my-filter button small { margin-left: 4px; opacity: .75; }
+
+.shp-promo-card.align-center { justify-content: center; }
+.shp-promo-card.align-center .shp-promo-card-copy { text-align: center; align-items: center; }
+.shp-promo-card.align-right { justify-content: flex-end; }
+.shp-promo-card.align-right .shp-promo-card-copy { text-align: right; align-items: flex-end; }
+.shp-home-banner-item.align-center .shp-home-banner-cta { align-self: center; }
+.shp-home-banner-item.align-right .shp-home-banner-cta { align-self: flex-end; }
+
+.shp-sort-select { display: none; }
+@media (max-width: 768px) {
+	.shp .shp-filter .shp-sort { display: none; }
+	.shp .shp-filter .shp-sort-select { display: block; flex: 0 0 auto; max-width: 100%; margin-left: auto; }
+	.shp .shp-cats { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; scrollbar-color: transparent transparent; }
+	.shp .shp-cats::-webkit-scrollbar { display: none; width: 0; height: 0; }
+	.shp .shp-cats > * { flex: 0 0 auto; white-space: nowrap; }
+}
+
+.shp-seller-line { margin: 0 0 10px; font-size: 13px; color: var(--shp-sub); }
+.shp-seller-line a { margin-left: 4px; font-weight: 700; color: var(--shp-text); text-decoration: none; border-bottom: 1px solid transparent; }
+.shp-seller-line a:hover { color: var(--shp-brand); border-bottom-color: currentColor; }
+.shp-seller-info dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 6px 20px; margin: 0; padding: 14px 16px; border: 1px solid var(--shp-border); border-radius: 12px; background: var(--shp-card); font-size: 13px; }
+.shp-seller-info dl div { display: flex; gap: 10px; min-width: 0; }
+.shp-seller-info dt { flex: none; width: 110px; color: var(--shp-sub); }
+.shp-seller-info dd { margin: 0; min-width: 0; color: var(--shp-text); overflow-wrap: anywhere; }
+.shp-seller-note { margin: 8px 0 0; font-size: 12px; line-height: 1.6; color: var(--shp-sub); }
+.shp-seller-head { margin: 0 0 20px; padding: 22px 24px; border: 1px solid var(--shp-border); border-left: 4px solid var(--shp-brand); border-radius: 14px; background: var(--shp-card); }
+.shp-seller-head small { display: block; font-size: 12px; font-weight: 700; color: var(--shp-brand); }
+.shp-seller-head strong { display: block; margin-top: 2px; font-size: 22px; font-weight: 800; color: var(--shp-text); }
+.shp-seller-head p { margin: 6px 0 0; max-width: 60ch; font-size: 14px; line-height: 1.6; color: var(--shp-sub); }
+.shp-bundles .shp-summary-row > span:last-child { display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; }
+.shp-seller-apply textarea { padding: 11px 12px; border: 1px solid var(--shp-border); border-radius: 12px; background: var(--shp-card); color: var(--shp-text); font-size: 15px; font-family: inherit; }
+.shp-seller-apply .shp-row small { display: block; margin-top: 4px; font-size: 12px; color: var(--shp-sub); }
+.shp-card-seller { display: block; margin-top: 2px; font-size: 12px; color: var(--shp-sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.shp-claim-blocked { margin: 8px 0 0; font-size: 13px; color: var(--shp-sub); }

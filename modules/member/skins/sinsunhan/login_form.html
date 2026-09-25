@@ -33,7 +33,7 @@
 				</div>
 			</fieldset>
 		</form>
-		{@ $sns_login_services = Zittme\Modules\Member\Social\Base::isEnabled() ? Zittme\Modules\Member\Social\Base::getEnabledServices() : array(); }
+		{@ $sns_login_services = (class_exists('Zittme\Modules\Member\Social\Base') && Zittme\Modules\Member\Social\Base::isEnabled()) ? Zittme\Modules\Member\Social\Base::getEnabledServices() : array(); }
 		<div class="member-sns-login" cond="count($sns_login_services)">
 			<div class="member-sns-login-sep"><span>{$lang->sns_login}</span></div>
 			<a loop="$sns_login_services => $sns_service" href="{getUrl('', 'module', 'member', 'act', 'procMemberSnsConnect', 'service', $sns_service, 'redirect', $referer_url)}" class="member-sns-btn member-sns-{$sns_service}">{$sns_service} {$lang->sns_login_with}</a>

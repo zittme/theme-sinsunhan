@@ -1,6 +1,4 @@
 @version(2)
-{{-- 테마 내장 메인페이지 — 대문(메인 형태)에서 상품·게시글·카테고리 섹션을 렌더링한다. --}}
-{{-- 레이아웃 설정의 "메인 구성" 반복 필드로 조립하고, 비워두면 기본 구성을 쓴다. --}}
 @php
 // 커머스 스킨 공용 헬퍼(가격 표기)는 커머스 컨트롤러가 로드한다.
 // 대문은 다른 모듈이므로 여기서 직접 불러 둔다. 커머스 미설치면 그냥 넘어간다.
@@ -32,6 +30,80 @@ if (!function_exists('hrh_flat_text'))
 		$hrh_gt = chr(62);
 		$hrh_t = preg_replace('/' . $hrh_lt . 'br[^' . $hrh_gt . ']*' . $hrh_gt . '/i', ' ', (string)$hrh_t);
 		return trim(strip_tags($hrh_t));
+	}
+}
+if (!function_exists('ss_cat_icon_keys'))
+{
+	// 카테고리 아이콘 매칭 키: 분류 번호, 저장값, 현재 언어 이름, 다국어 연결 시 모든 언어의 이름
+	function ss_cat_icon_keys($ss_cat)
+	{
+		static $ss_lang_cache = [];
+		$ss_keys = [(string)(int)($ss_cat->category_srl ?? 0)];
+		$ss_raw = (string)($ss_cat->title_raw ?? $ss_cat->title ?? '');
+		$ss_keys[] = trim($ss_raw);
+		$ss_keys[] = trim(\Context::replaceUserLang($ss_raw));
+		if (preg_match('/\\$' . 'user_lang-' . chr(62) . '([A-Za-z0-9_]+)/', $ss_raw, $ss_m))
+		{
+			if (!isset($ss_lang_cache[$ss_m[1]]))
+			{
+				$ss_lang_cache[$ss_m[1]] = [];
+				$ss_lout = executeQueryArray('module.getLangListByName', (object)['name' => $ss_m[1]]);
+				foreach (($ss_lout->toBool() ? ($ss_lout->data ?: []) : []) as $ss_lrow)
+				{
+					$ss_lang_cache[$ss_m[1]][] = trim((string)($ss_lrow->value ?? ''));
+				}
+			}
+			$ss_keys = array_merge($ss_keys, $ss_lang_cache[$ss_m[1]]);
+		}
+		return array_values(array_unique(array_filter($ss_keys, function($k) { return $k !== '' && $k !== '0'; })));
+	}
+}
+if (!function_exists('ss_cat_icon_find'))
+{
+	function ss_cat_icon_find(array $ss_map, $ss_cat)
+	{
+		foreach (ss_cat_icon_keys($ss_cat) as $ss_k)
+		{
+			if (isset($ss_map[$ss_k])) { return $ss_map[$ss_k]; }
+		}
+		return null;
+	}
+}
+if (!function_exists('hr_home_ts_price'))
+{
+	// 지금 열린 타임세일가. 없으면 0 (타임세일 중에는 커머스 규칙대로 등급 할인이 겹치지 않는다)
+	function hr_home_ts_price($hrh_it)
+	{
+		if (!isset($hrh_it->ts_price))
+		{
+			$hrh_it->ts_price = 0;
+			if (class_exists('\\Zittme\\Modules\\Commerce\\Models\\Timesale') && method_exists('\\Zittme\\Modules\\Commerce\\Models\\Timesale', 'forItem'))
+			{
+				$hrh_tsr = \Zittme\Modules\Commerce\Models\Timesale::forItem($hrh_it);
+				if ($hrh_tsr) { $hrh_it->ts_price = (int)$hrh_tsr->price; }
+			}
+		}
+		return (int)$hrh_it->ts_price;
+	}
+}
+if (!function_exists('hr_home_grade_price'))
+{
+	// 로그인 회원의 등급 할인가 (기준 통화). 할인이 값을 낮추지 않으면 0
+	function hr_home_grade_price($hrh_it)
+	{
+		static $hrh_gd = false;
+		if (hr_home_ts_price($hrh_it) > 0) { return 0; }
+		if (!class_exists('\\Zittme\\Modules\\Commerce\\Models\\Grade') || ($hrh_it->grade_discount ?? 'Y') === 'N') { return 0; }
+		if ($hrh_gd === false)
+		{
+			$hrh_logged = \Context::get('logged_info');
+			$hrh_gd = (int)($hrh_logged->member_srl ?? 0) > 0 ? \Zittme\Modules\Commerce\Models\Grade::discountFor((int)$hrh_logged->member_srl) : null;
+		}
+		if (!$hrh_gd) { return 0; }
+		$hrh_sale = (int)($hrh_it->sale_price ?? 0);
+		$hrh_base = $hrh_sale > 0 && $hrh_sale < (int)($hrh_it->price ?? 0) ? $hrh_sale : (int)($hrh_it->price ?? 0);
+		$hrh_graded = \Zittme\Modules\Commerce\Models\Grade::applyDiscount($hrh_base, $hrh_gd);
+		return $hrh_graded < $hrh_base ? $hrh_graded : 0;
 	}
 }
 if (!function_exists('hr_home_cmp_off'))
@@ -85,7 +157,17 @@ if ($hrh_shop_mid === '')
 
 // 섹션 구성 — 설정이 비어 있으면 기본 구성
 $hrh_sections = [];
-foreach (array_values((array)($hr->home_sections ?? [])) as $hrh_srow)
+$hrh_section_rows = ss_repeat_items($hr, 'home_sections', ['stype', 'title', 'source', 'count']);
+if (!count($hrh_section_rows) && trim((string)($hr->home_sections_text ?? '')) !== '')
+{
+	foreach (preg_split('/\r\n|\r|\n/', (string)$hr->home_sections_text) as $hrh_line)
+	{
+		$hrh_cols = array_map('trim', explode('|', $hrh_line));
+		if ($hrh_cols[0] === '') { continue; }
+		$hrh_section_rows[] = ['stype' => $hrh_cols[0], 'title' => $hrh_cols[1] ?? '', 'source' => $hrh_cols[2] ?? '', 'count' => $hrh_cols[3] ?? 8];
+	}
+}
+foreach ($hrh_section_rows as $hrh_srow)
 {
 	$hrh_srow = (array)$hrh_srow;
 	if (empty($hrh_srow['stype'])) { continue; }
@@ -161,6 +243,7 @@ foreach ($hrh_sections as $hrh_sec)
 		foreach ((is_array($hrh_cout->data) ? $hrh_cout->data : [$hrh_cout->data]) as $hrh_cat)
 		{
 			if (empty($hrh_cat->category_srl) || (int)($hrh_cat->parent_srl ?? 0) !== 0) { continue; }
+			$hrh_cat->title_raw = (string)$hrh_cat->title;
 			$hrh_cat->title = \Context::replaceUserLang((string)$hrh_cat->title);
 			$hrh_cats[] = $hrh_cat;
 		}
@@ -249,7 +332,7 @@ if (!function_exists('hr_home_posts'))
 	// 레이아웃 설정 "카테고리 아이콘": 카테고리 이름이 일치하면 이미지 또는 이모지/글자를 첫 음절 대신 쓴다.
 	// (영어·스페인어처럼 첫 글자가 구분이 안 되는 언어를 위한 것. 설정이 없으면 첫 음절.)
 	$hrh_icon_map = [];
-	foreach (array_values((array)($layout_info->cat_icons ?? [])) as $hrh_ic)
+	foreach (ss_repeat_items($layout_info, 'cat_icons', ['cat_title', 'icon_image', 'icon_text'], 6, 'cat_icon', 'cat_title') as $hrh_ic)
 	{
 		$hrh_ic = (array)$hrh_ic;
 		$hrh_ic_key = trim((string)($hrh_ic['cat_title'] ?? ''));
@@ -261,7 +344,7 @@ if (!function_exists('hr_home_posts'))
 	@endphp
 	<nav class="ssh-tiles" aria-label="{{ $lang->ssh_sec_categories }}">
 		@foreach (array_slice($hrh_cats, 0, $hrh_sec['count']) as $hrh_cat)
-		@php $hrh_ic = $hrh_icon_map[trim((string)$hrh_cat->title)] ?? null; @endphp
+		@php $hrh_ic = ss_cat_icon_find($hrh_icon_map, $hrh_cat); @endphp
 		<a href="{{ getUrl('', 'mid', $hrh_shop_mid, 'v', 'list', 'category', $hrh_cat->category_srl) }}">
 			@if (!empty($hrh_ic['icon_image']))
 			<span class="ssh-tile-mark has-img"><img src="{{ $hrh_ic['icon_image'] }}" alt="" loading="lazy" /></span>
@@ -320,6 +403,9 @@ if (!function_exists('hr_home_posts'))
 	@php
 	$hrh_dp = (int)$hrh_deal->price;
 	$hrh_ds = (int)$hrh_deal->sale_price;
+	$hrh_dg = hr_home_grade_price($hrh_deal);
+	if ($hrh_dg > 0) { $hrh_ds = $hrh_dg; }
+	if (hr_home_ts_price($hrh_deal) > 0) { $hrh_ds = hr_home_ts_price($hrh_deal); }
 	$hrh_doff = (int)round(($hrh_dp - $hrh_ds) / $hrh_dp * 100);
 	@endphp
 	<section class="ssh-daily">
@@ -426,6 +512,9 @@ if (!function_exists('hr_home_posts'))
 			$hrh_price = (int)($hrh_it->price ?? 0);
 			$hrh_sale = (int)($hrh_it->sale_price ?? 0);
 			$hrh_on_sale = $hrh_sale > 0 && $hrh_sale < $hrh_price;
+			$hrh_grade = hr_home_grade_price($hrh_it);
+			if ($hrh_grade > 0) { $hrh_sale = $hrh_grade; $hrh_on_sale = true; }
+			if (hr_home_ts_price($hrh_it) > 0) { $hrh_sale = hr_home_ts_price($hrh_it); $hrh_on_sale = $hrh_sale < $hrh_price; }
 			$hrh_off = ($hrh_on_sale && $hrh_price > 0) ? (int)round(($hrh_price - $hrh_sale) / $hrh_price * 100) : 0;
 			@endphp
 			<li>
@@ -478,15 +567,23 @@ if (!function_exists('hr_home_posts'))
 				</span>
 				<span class="ssh-card-body">
 					<span class="ssh-card-name">{{ $hrh_it->item_name }}</span>
+					@php
+					$hrh_grade = hr_home_grade_price($hrh_it);
+					if (hr_home_ts_price($hrh_it) > 0) { $hrh_grade = hr_home_ts_price($hrh_it); }
+					@endphp
 					<span class="ssh-card-price">
-						@if ($hrh_on_sale)
+						@if ($hrh_grade > 0)
+						@php $hrh_goff = $hrh_price > 0 ? (int)round(($hrh_price - $hrh_grade) / $hrh_price * 100) : 0; @endphp
+						@if ($hrh_goff > 0)<em class="ssh-off">{{ $hrh_goff }}%</em>@endif
+						<strong>{{ hr_home_price($hrh_grade) }}</strong>
+						@elseif ($hrh_on_sale)
 						<em class="ssh-off">{{ $hrh_off }}%</em>
 						<strong>{{ hr_home_price($hrh_sale) }}</strong>
 						@else
 						<strong>{{ hr_home_price($hrh_price) }}</strong>
 						@endif
 					</span>
-					@if ($hrh_on_sale)<s class="ssh-card-was">{{ hr_home_price($hrh_price) }}</s>@endif
+					@if ($hrh_grade > 0 || $hrh_on_sale)<s class="ssh-card-was">{{ hr_home_price($hrh_price) }}</s>@endif
 				</span>
 			</a>
 			@endforeach

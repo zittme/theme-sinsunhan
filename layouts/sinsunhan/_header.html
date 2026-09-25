@@ -60,6 +60,8 @@ $hr_lang_sep = strpos($hr_lang_uri, '?') === false ? '?' : '&';
 			<a href="{{ getUrl('', 'module', 'admin') }}" target="_blank">{{ $lang->hr_admin }}</a>
 			<a href="{{ getUrl('', 'module', 'commerce', 'act', 'dispCommerceConsole') }}" target="_blank" class="ss-topbar-shopadmin">{{ $lang->hr_shop_admin }}</a>
 			<a href="{{ getUrl('', 'module', 'admin', 'act', 'dispZittme_payAdminConfig') }}" target="_blank" class="ss-topbar-payadmin">{{ $lang->hr_pay_admin }}</a>
+			@elseif (class_exists('\Zittme\Modules\Commerce\Models\Staff') && \Zittme\Modules\Commerce\Models\Staff::isStaff())
+			<a href="{{ getUrl('', 'module', 'commerce', 'act', 'dispCommerceConsole') }}" target="_blank" class="ss-topbar-shopadmin">{{ $lang->hr_shop_admin }}</a>
 			@endif
 			<a href="{{ getUrl('', 'act', 'dispMemberLogout') }}">{{ $lang->hr_logout }}</a>
 			@else
@@ -337,6 +339,11 @@ $hr_lang_sep = strpos($hr_lang_uri, '?') === false ? '?' : '&';
 			<a class="hr-mobile-tool" href="{{ getUrl('', 'module', 'admin', 'act', 'dispZittme_payAdminConfig') }}" target="_blank">
 				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6zm2 3v2h14V9H5zm0 4v5h14v-5H5zm2 2h5v1.6H7V15z"/></svg>
 				<span>{{ $lang->hr_pay_admin }}</span>
+			</a>
+			@elseif (class_exists('\Zittme\Modules\Commerce\Models\Staff') && \Zittme\Modules\Commerce\Models\Staff::isStaff())
+			<a class="hr-mobile-tool" href="{{ getUrl('', 'module', 'commerce', 'act', 'dispCommerceConsole') }}" target="_blank">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16l-1.5 9.5a2 2 0 0 1-2 1.7H7.6a2 2 0 0 1-2-1.6L4 4zm2.3 2 1.2 7.2h9.1L17.7 6H6.3zM8 17.5A1.75 1.75 0 1 1 8 21a1.75 1.75 0 0 1 0-3.5zm8 0a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5z"/></svg>
+				<span>{{ $lang->hr_shop_admin }}</span>
 			</a>
 			@endif
 

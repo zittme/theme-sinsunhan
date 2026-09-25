@@ -8,7 +8,6 @@
 
 	ready(function () {
 
-		// 헤더와 모바일 서랍에 하나씩 있다. 둘 다 같은 동작을 한다
 		var themeBtns = document.querySelectorAll('[data-hr-theme-toggle]');
 		for (var t = 0; t < themeBtns.length; t++) {
 			themeBtns[t].addEventListener('click', function () {
@@ -29,7 +28,6 @@
 			});
 		}
 
-		// 언어 목록: 버튼으로 여닫고, 바깥을 누르거나 Esc 로 닫는다
 		var langBox = document.getElementById('hr_lang');
 		if (langBox) {
 			var langBtn = langBox.querySelector('.hr-lang-btn');
@@ -237,7 +235,6 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 });
 
-// 모바일 하단 탭바 — 카테고리·검색 탭은 아래서 올라오는 바텀시트를 연다.
 // 이 파일은 head 에서 실행되므로 요소 바인딩은 반드시 DOM 준비 후에 한다.
 (function () {
 	function init() {
@@ -292,7 +289,6 @@ document.addEventListener('DOMContentLoaded', function () {
 				if (sheets.cats && sheets.cats.querySelector('.ss-sheet-cats')) {
 					openSheet('cats');
 				} else {
-					// 상점 카테고리가 없으면 메뉴 서랍으로 대신 연다
 					var burger = document.getElementById('hr_burger');
 					if (burger) { burger.click(); }
 				}
@@ -309,6 +305,75 @@ document.addEventListener('DOMContentLoaded', function () {
 		document.querySelectorAll('[data-ss-sheet-close]').forEach(function (btn) {
 			btn.addEventListener('click', function () { closeSheet(); });
 		});
+	}
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', init);
+	} else {
+		init();
+	}
+})();
+
+(function () {
+	'use strict';
+
+	function setup(nav, subClass) {
+		var list = nav.querySelector(':scope > ul');
+		if (!list) { return null; }
+		var items = Array.prototype.slice.call(list.children);
+		var more = document.createElement('li');
+		more.className = 'has-sub ss-more';
+		var btn = document.createElement('button');
+		btn.type = 'button';
+		btn.className = 'ss-more-btn';
+		btn.setAttribute('aria-label', nav.getAttribute('aria-label') || '');
+		btn.setAttribute('aria-haspopup', 'true');
+		btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
+		var sub = document.createElement('ul');
+		sub.className = subClass + ' ss-more-sub';
+		more.appendChild(btn);
+		more.appendChild(sub);
+
+		function fits() {
+			return list.scrollWidth <= list.clientWidth + 1;
+		}
+
+		return function layout() {
+			items.forEach(function (li) { list.appendChild(li); });
+			if (more.parentNode) { more.parentNode.removeChild(more); }
+			if (!nav.offsetParent || fits()) { return; }
+			list.appendChild(more);
+			for (var i = items.length - 1; i >= 0 && !fits(); i--) {
+				sub.insertBefore(items[i], sub.firstChild);
+			}
+			if (!sub.children.length) { list.removeChild(more); }
+		};
+	}
+
+	function init() {
+		var bar = document.querySelector('.ss-catbar-inner');
+		if (!bar) { return; }
+		var runs = [];
+		var cats = bar.querySelector(':scope > .ss-cats');
+		var gnb = bar.querySelector(':scope > .ss-gnb');
+		if (cats) { runs.push(setup(cats, 'ss-cats-sub')); }
+		if (gnb) { runs.push(setup(gnb, 'ss-gnb-sub')); }
+		runs = runs.filter(Boolean);
+		if (!runs.length) { return; }
+
+		var frame = 0;
+		function update() {
+			frame = 0;
+			runs.forEach(function (run) { run(); });
+			runs.forEach(function (run) { run(); });
+		}
+		function schedule() {
+			if (!frame) { frame = window.requestAnimationFrame(update); }
+		}
+		window.addEventListener('resize', schedule);
+		if (document.fonts && document.fonts.ready) { document.fonts.ready.then(schedule); }
+		window.addEventListener('load', schedule);
+		update();
 	}
 
 	if (document.readyState === 'loading') {

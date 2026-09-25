@@ -1,0 +1,18 @@
+@version(2)
+@load('css/shop.css')
+@load('css/store.css')
+
+@php
+	$st_color = (string)$store_color;
+@endphp
+<div class="shp shp-store st-frame-top" @if ($st_color !== '') style="--st-color: {{ $st_color }}" @endif>
+	@include('_storeframe_head')
+</div>
+
+<div class="shp-store st-frame-item" @if ($st_color !== '') style="--st-color: {{ $st_color }}" @endif>
+	@include('item')
+</div>
+
+<div class="shp shp-store st-frame-bottom" @if ($st_color !== '') style="--st-color: {{ $st_color }}" @endif>
+	@include('_storeframe_foot')
+</div>

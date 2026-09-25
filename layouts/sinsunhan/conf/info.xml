@@ -137,8 +137,8 @@
 			<var name="cat_icons" type="repeat">
 				<title xml:lang="ko">카테고리 아이콘</title>
 				<title xml:lang="en">Category icons</title>
-				<description xml:lang="ko">메인 카테고리 타일에 첫 음절 대신 보여줄 아이콘입니다. 카테고리 이름이 정확히 일치하는 항목에 적용되며, 이미지가 있으면 이미지를, 없으면 이모지/글자를 씁니다. 영어처럼 첫 글자로 구분이 어려운 언어에 유용합니다.</description>
-				<description xml:lang="en">Icons shown on the front-page category tiles instead of the first letter. Matched by exact category title; image first, then emoji/text.</description>
+				<description xml:lang="ko">메인 카테고리 타일에 첫 음절 대신 보여줄 아이콘입니다. 카테고리 이름(다국어로 연결한 카테고리는 어느 언어의 이름이든) 또는 분류 번호가 일치하는 항목에 적용되며, 이미지가 있으면 이미지를, 없으면 이모지/글자를 씁니다. 영어처럼 첫 글자로 구분이 어려운 언어에 유용합니다.</description>
+				<description xml:lang="en">Icons shown on the front-page category tiles instead of the first letter. Matched by category title in any linked language, or by category number; image first, then emoji/text.</description>
 				<item>
 					<var name="cat_title" type="text"><title xml:lang="ko">카테고리 이름</title><title xml:lang="en">Category title</title></var>
 					<var name="icon_image" type="image"><title xml:lang="ko">아이콘 이미지</title><title xml:lang="en">Icon image</title></var>

@@ -234,7 +234,6 @@
 				setVal('zipcode_intl', opt.getAttribute('data-zipcode'));
 				setVal('address1', opt.getAttribute('data-address1'));
 				setVal('address2', opt.getAttribute('data-address2'));
-				// 채워 넣은 값으로 배송비를 다시 계산하게 한다
 				var a1 = document.querySelector('[name="address1"]');
 				if (a1) a1.dispatchEvent(new Event('change', { bubbles: true }));
 			});
@@ -244,12 +243,10 @@
 		var couponSel = document.getElementById('shpCouponSelect');
 		var creditInput = document.getElementById('shpUseCredit');
 		function fmt(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
-		// 통화 인지 금액 표기 — 외화 주문서는 금액이 통화 최소단위 정수다
 		var shpCur = paybox ? (paybox.getAttribute('data-currency') || 'KRW') : 'KRW';
 		var shpBase = paybox ? (paybox.getAttribute('data-base') || 'KRW') : 'KRW';
 		var shpZero = paybox ? paybox.getAttribute('data-zero') === '1' : true;
 		var shpRate = paybox ? (parseFloat(paybox.getAttribute('data-rate')) || 1) : 1;
-		// 기호는 서버가 정한 것을 그대로 받는다. 표를 두 벌 두면 화면끼리 표기가 갈린다
 		var shpSym = paybox ? (paybox.getAttribute('data-symbol') || '') : '';
 		var shpWonSuffix = paybox ? paybox.getAttribute('data-won-suffix') === '1' : true;
 		function money(minor) {
@@ -309,11 +306,9 @@
 				var zoneCountry = String(extraZones[i].country || '').toUpperCase() || 'KR';
 				if (zoneCountry !== country) continue;
 
-				// 행정구역 코드로 맞춘다 (구매자도 같은 목록에서 고른다)
 				var zoneRegion = String(extraZones[i].region || '').trim();
 				if (zoneRegion && buyerRegion && zoneRegion.toUpperCase() === buyerRegion.toUpperCase()) return fee;
 
-				// 해외는 지역을 지정하지 않았으면 나라 단위로 적용한다
 				if (country !== 'KR') {
 					if (!zoneRegion) return fee;
 					continue;
@@ -384,7 +379,6 @@
 		}
 		// 버튼 문구는 언어 파일에서 받는다. JS 가 한국어를 박으면 다른 언어에서 덮어써진다
 		var shpPayLabel = {!! json_encode($lang->shop_pay_amount) !!};
-		// 배송 국가에 맞춰 행정구역 목록을 갈아 끼운다
 		var shpRegionData = {!! $shp_region_json !!};
 		var shpStateInput = document.getElementById('shpStateInput');
 		if (shpStateInput && window.zmcPickBox) {
@@ -457,7 +451,6 @@
 				@if ($shop_require_state)
 				var stateRow = checkoutForm.querySelector('.shp-row.shp-intl-only #shpStateInput');
 				f = val('state');
-				// 주·도 칸이 화면에 있을 때만 본다. 국내 입력에서는 감춰져 있다
 				if (f && f.v === '' && stateRow && stateRow.offsetParent !== null) {
 					return fail({ el: stateRow }, {!! json_encode($lang->msg_shop_state_required) !!});
 				}

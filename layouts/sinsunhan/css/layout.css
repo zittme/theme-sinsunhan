@@ -59,7 +59,6 @@ html, body { margin: 0; background: var(--hr-bg); }
 .hr-search button svg { width: 17px; height: 17px; fill: currentColor; }
 .hr-search button:hover { color: var(--hr-brand); }
 
-/* 언어 전환 */
 .hr-lang { position: relative; }
 .hr-lang-btn {
 	display: inline-flex;
@@ -240,12 +239,11 @@ html, body { margin: 0; background: var(--hr-bg); }
 .hr-mobile-dim.is-open { opacity: 1; }
 /* 서랍은 내비 색상 옵션(n-light 등)과 무관하게 항상 다크 톤으로 고정한다.
  * 옵션 조합에 따라 배경과 글자색 변수가 어긋나 문구가 안 보이는 조합이 생기기 때문이다 */
-/* 메뉴가 늘어나도 아래 도구 줄은 자리를 지킨다. 가운데 목록만 굴린다 */
-/* 서랍 — 밝은 톤 (테마 토큰을 그대로 물려받는다) */
 .hr-mobile { position: fixed; top: 0; right: 0; bottom: 0; z-index: 200; width: min(320px, 85vw); --hr-nav-bg: var(--hr-bg); --hr-nav-fg-on: var(--hr-ink); background: var(--hr-nav-bg); color: var(--hr-nav-fg-on); display: flex; flex-direction: column; overscroll-behavior: contain; transform: translateX(100%); transition: transform .24s ease; box-shadow: -8px 0 32px rgba(0, 0, 0, .18); }
 .hr-mobile[hidden] { display: none; }
 .hr-mobile .hr-mobile-head, .hr-mobile .hr-mobile-account, .hr-mobile .hr-mobile-tools { flex: none; }
-.hr-mobile .hr-mobile-list { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.hr-mobile { height: 100vh; height: 100dvh; max-height: 100dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: env(safe-area-inset-bottom, 0px); }
+.hr-mobile .hr-mobile-list { flex: none; min-height: auto; }
 .hr-mobile.is-open { transform: translateX(0); }
 .hr-mobile-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--hr-line-soft); }
 .hr-mobile-title { font-size: 15px; font-weight: 800; color: var(--hr-nav-fg-on); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -301,7 +299,6 @@ body.hr-mobile-on { overflow: hidden; }
 .hr-mobile-sub2 { margin: 0; padding: 0 0 6px; list-style: none; }
 .hr-mobile-sub2 a { padding: 7px clamp(38px, 8vw, 60px); font-size: 13px; color: var(--hr-muted); }
 
-/* 모바일 하단 탭바 — 네이버쇼핑식 5탭 */
 .ss-tabbar { display: none; }
 @media (max-width: 860px) {
 	.hr-layout { padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px)); }
@@ -335,20 +332,20 @@ body.hr-mobile-on { overflow: hidden; }
 		text-decoration: none;
 	}
 	.ss-tabbar svg { width: 22px; height: 22px; fill: currentColor; }
+	.ss-tabbar > a { position: relative; }
+	.ss-tabbar-badge { position: absolute; top: 6px; left: calc(50% + 4px); min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: #e5484d; color: #fff; font-size: 10px; font-weight: 800; font-style: normal; line-height: 16px; text-align: center; box-shadow: 0 0 0 2px var(--hr-bg, #fff); }
 	.ss-tabbar > a:active, .ss-tabbar > button:active,
 	.ss-tabbar > a:hover, .ss-tabbar > button:hover { color: var(--hr-brand); }
 }
 .hr-mobile-sub2 a::before { content: "- "; }
 
-/* 비주얼 슬라이더 — 문구는 좌하단, 컨트롤(화살표+점)은 우하단 한 덩어리.
-   화살표를 양옆 세로 중앙에 두지 않아 모바일에서 문구와 겹치지 않는다 */
 .hr-visual { position: relative; overflow: hidden; background: #11141a; }
 .hr-visual-track { position: relative; height: clamp(240px, 32vw, 400px); }
 .hr-visual-item {
 	position: absolute;
 	inset: 0;
 	display: flex;
-	align-items: flex-end;
+	align-items: center;
 	background-size: cover;
 	background-position: center;
 	opacity: 0;
@@ -367,6 +364,7 @@ body.hr-mobile-on { overflow: hidden; }
 	width: 100%;
 	color: #fff;
 	text-align: left;
+	padding-top: clamp(24px, 4vw, 44px);
 	padding-bottom: clamp(24px, 4vw, 44px);
 	padding-right: 170px;
 }
@@ -378,7 +376,6 @@ body.hr-mobile-on { overflow: hidden; }
 .hr-visual-copy p { margin: 10px 0 0; max-width: 560px; font-size: clamp(13px, 1.4vw, 16px); color: rgba(255, 255, 255, .88); }
 .hr-visual-copy .hr-btn { margin-top: 18px; }
 
-/* 컨트롤 클러스터: [◀][점들][▶] 한 덩어리 — 우하단 */
 .hr-visual-ctrl {
 	position: absolute;
 	right: clamp(16px, 3vw, 34px);
@@ -475,7 +472,6 @@ body.hr-mobile-on { overflow: hidden; }
 	.hr-navbar, .hr-search, .hr-util-link { display: none; }
 	.hr-burger { display: block; }
 
-	/* 좁은 화면에서는 알림과 햄버거만 남긴다. 나머지는 서랍 아래 도구 줄에 있다 */
 	.hr-utilrow-inner { gap: 12px; }
 	.hr-logo { min-width: 0; }
 	.hr-utils { gap: 8px; }
@@ -489,7 +485,8 @@ body.hr-mobile-on { overflow: hidden; }
 	.hr-lnb-list > li + li { border-top: 0; }
 	.hr-lnb-list > li > a { line-height: 34px; padding: 0 14px; white-space: nowrap; border: 1px solid var(--hr-line); border-radius: var(--hr-radius-pill); }
 	.hr-lnb-sub { display: none; }
-	.hr-visual-copy { padding-right: 16px; padding-bottom: 66px; }
+	.hr-visual-item { align-items: flex-end; }
+	.hr-visual-copy { padding-top: 0; padding-right: 16px; padding-bottom: 66px; }
 	.hr-visual-item.align-center .hr-visual-copy { padding-left: 16px; }
 	.hr-visual-nav { width: 32px; height: 32px; }
 	.hr-visual-dots { height: 32px; padding: 0 11px; }
@@ -533,7 +530,6 @@ body.hr-mobile-on { overflow: hidden; }
 .hr .hr-visual-copy a.hr-btn:active,
 .hr-visual-copy .hr-btn:active { transform: translateY(0); }
 
-/* ── 알림센터 헤더 벨 ── */
 .hr-nc { position: relative; display: flex; align-items: center; }
 .hr-nc-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border: 0; border-radius: 8px; background: transparent; color: var(--hr-ink-sub); cursor: pointer; transition: background .13s, color .13s; }
 .hr-nc-btn svg { width: 19px; height: 19px; fill: currentColor; }
@@ -558,15 +554,12 @@ body.hr-mobile-on { overflow: hidden; }
 	.hr-nc-panel { position: fixed; top: 60px; left: 12px; right: 12px; width: auto; }
 }
 
-/* 모바일 다크모드·언어 위치 옵션 (mtp-/mlp- 클래스) */
 @media (max-width: 860px) {
 	.mtp-header .hr-theme { display: inline-flex; }
 	.mlp-header .hr-lang { display: block; }
-	/* 빵메뉴는 우측 끝에 선다 */
 	.hr-burger { order: 99; margin-left: auto; }
 	.mtp-footer .hr-foot-tools, .mlp-footer .hr-foot-tools { display: flex; }
 }
-/* 푸터 다크모드·언어 컨트롤: 모바일 + '푸터' 옵션에서만 보인다 */
 .hr-foot-tools { display: none; align-items: center; gap: 10px; }
 .hr-foot-theme {
 	display: inline-flex;
@@ -628,7 +621,6 @@ body.hr-mobile-on { overflow: hidden; }
 	.hr-search-main { display: none; }
 }
 
-/* ============ 신선한: 쇼핑몰 헤더 ============ */
 .ss-head { border-bottom: 0; background: var(--hr-bg); }
 .ss-head .hr-inner { max-width: var(--hr-w); margin: 0 auto; padding-left: 20px; padding-right: 20px; }
 
@@ -678,10 +670,9 @@ body.hr-mobile-on { overflow: hidden; }
 	width: 62px; padding: 6px 0; border: 0; background: none; color: var(--hr-ink-sub); cursor: pointer;
 }
 .ss-icon svg { width: 24px; height: 24px; fill: currentColor; }
-.ss-icon-label { font-size: 11px; font-weight: 600; letter-spacing: -.02em; }
+.ss-icon-label { display: block; max-width: 100%; font-size: 11px; font-weight: 600; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ss-icon:hover { color: var(--hr-brand); }
 .ss-icon .hr-nc-badge { top: 0; right: 12px; }
-/* 장바구니 담긴 수 — 아이콘 오른쪽 위 */
 .ss-icon-badge {
 	position: absolute;
 	top: 0;
@@ -699,7 +690,6 @@ body.hr-mobile-on { overflow: hidden; }
 	text-align: center;
 	box-shadow: 0 0 0 2px var(--hr-bg);
 }
-/* 알림 벨도 다른 헤더 아이콘과 같은 세로(아이콘+라벨) 형태로 통일 */
 .ss-icon.hr-nc { flex-direction: column; }
 .ss-icon .hr-nc-btn {
 	width: auto;
@@ -733,7 +723,6 @@ body.hr-mobile-on { overflow: hidden; }
 }
 .ss-catall-btn svg { width: 20px; height: 20px; fill: currentColor; }
 .ss-catall.is-open .ss-catall-btn { color: var(--hr-brand); }
-/* 전체 카테고리 — 메가메뉴: 1차 = 열 머리, 2차 = 세로 목록 */
 .ss-catall-panel {
 	position: absolute; top: 100%; left: -14px; z-index: 60;
 	width: min(760px, calc(100vw - 40px));
@@ -811,6 +800,7 @@ body.hr-mobile-on { overflow: hidden; }
 	.ss-icon { width: 48px; }
 	.ss-icon svg { width: 22px; height: 22px; }
 	.ss-icon-label { display: none; }
+	.ss-icon-badge { top: 1px; right: 1px; min-width: 14px; height: 14px; padding: 0 3px; font-size: 9px; line-height: 14px; box-shadow: 0 0 0 1.5px var(--hr-bg); }
 	.ss-burger { display: flex; }
 }
 
@@ -839,10 +829,8 @@ body.hr-mobile-on { overflow: hidden; }
 }
 
 
-/* ---------- 테마 내장 메인페이지 (_home.html) ---------- */
 .ssh-home { width: 100%; display: flex; flex-direction: column; gap: 64px; padding: 10px 0 30px; }
 
-/* 카테고리 타일 */
 .ssh-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); gap: 10px; }
 .ssh-tiles a {
 	display: flex; flex-direction: column; align-items: center; gap: 10px;
@@ -861,14 +849,12 @@ body.hr-mobile-on { overflow: hidden; }
 .ssh-tile-name { font-size: 13px; font-weight: 600; color: var(--hr-ink-sub); text-align: center; }
 .ssh-tiles a:hover .ssh-tile-name { color: var(--hr-ink); }
 
-/* 섹션 타이틀 - 가운데 정렬 + 화살표 */
 .ssh-section-head { display: flex; justify-content: center; margin: 0 0 24px; }
 .ssh-section-head h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -.02em; color: var(--hr-ink); text-align: center; }
 .ssh-section-head h2 a { display: inline-flex; align-items: center; gap: 2px; color: inherit; text-decoration: none; }
 .ssh-section-head h2 svg { width: 22px; height: 22px; fill: var(--hr-muted); transition: transform .15s, fill .15s; }
 .ssh-section-head h2 a:hover svg { fill: var(--hr-brand); transform: translateX(3px); }
 
-/* 상품 카드 - 테두리 없는 형태: 이미지 + 담기 바 + 이름 + 할인가 */
 .ssh-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px 18px; }
 .ssh-card { display: flex; flex-direction: column; text-decoration: none; }
 .ssh-card-thumb {
@@ -905,7 +891,6 @@ body.hr-mobile-on { overflow: hidden; }
 .ssh-off { font-style: normal; font-size: 16px; font-weight: 800; color: var(--hr-danger); }
 .ssh-card-was { font-size: 12.5px; color: var(--hr-muted); }
 
-/* 중간 배너 스트립 */
 .ssh-strip {
 	position: relative; display: flex; align-items: center;
 	min-height: 130px; padding: 26px 40px;
@@ -918,7 +903,6 @@ body.hr-mobile-on { overflow: hidden; }
 .ssh-strip-copy strong { font-size: 22px; font-weight: 800; letter-spacing: -.02em; color: #fff; line-height: 1.35; }
 .ssh-strip-copy span { font-size: 14px; color: rgba(255, 255, 255, .85); }
 
-/* 일일특가 */
 .ssh-daily {
 	display: flex; align-items: stretch; gap: 34px;
 	padding: 30px 34px; border-radius: var(--hr-radius);
@@ -946,7 +930,6 @@ body.hr-mobile-on { overflow: hidden; }
 .ssh-daily-body .ssh-card-price strong { font-size: 22px; }
 .ssh-daily-body .ssh-off { font-size: 21px; }
 
-/* 최신 글 */
 .ssh-post-list { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--hr-ink); }
 .ssh-post-list li { border-bottom: 1px solid var(--hr-line-soft); }
 .ssh-post-list a { display: flex; align-items: center; gap: 10px; padding: 13px 4px; text-decoration: none; }
@@ -975,7 +958,6 @@ body.hr-mobile-on { overflow: hidden; }
 	.ssh-daily-timer { font-size: 28px; }
 }
 
-/* 하단 탭바 바텀시트 */
 .ss-sheet-dim { position: fixed; inset: 0; z-index: 205; background: rgba(0, 0, 0, .45); opacity: 0; transition: opacity .22s ease; }
 .ss-sheet-dim.is-open { opacity: 1; }
 .ss-sheet {
@@ -1038,7 +1020,6 @@ body.ss-sheet-on { overflow: hidden; }
 .ss-sheet-search input[type="search"]:focus { outline: none; }
 .ss-sheet-search .hr-btn { height: 46px; border-radius: var(--hr-radius-pill); padding: 0 20px; }
 
-/* 최신 글 다단 (공지사항 / 자유게시판 나란히) */
 .ssh-posts-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 36px; }
 .ssh-posts-grid.cols-1 { grid-template-columns: minmax(0, 1fr); }
 .ssh-posts-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -1052,7 +1033,6 @@ body.ss-sheet-on { overflow: hidden; }
 	.ssh-posts-grid, .ssh-posts-grid.cols-3 { grid-template-columns: minmax(0, 1fr); gap: 26px; }
 }
 
-/* 메인 기획전 카드 */
 .ssh-promo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .ssh-promo-card {
 	position: relative;
@@ -1077,7 +1057,6 @@ body.ss-sheet-on { overflow: hidden; }
 .ssh-promo-copy span { font-size: 13px; opacity: .85; }
 .ssh-promo-copy em { font-style: normal; font-size: 12px; font-weight: 700; opacity: .75; }
 
-/* 실시간 랭킹 */
 .ssh-rank-grid {
 	list-style: none;
 	margin: 0; padding: 0;
@@ -1103,7 +1082,6 @@ body.ss-sheet-on { overflow: hidden; }
 .ssh-rank-body { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .ssh-rank-body .ssh-card-name { -webkit-line-clamp: 1; }
 
-/* 푸터 확장 — 고객센터 + SNS + 잔줄 */
 .hr-footer-cs { max-width: 460px; }
 .hr-footer-cs-label { margin: 18px 0 2px; font-size: 13px; font-weight: 700; color: var(--hr-ink-sub); }
 .hr-footer-tel { display: inline-block; font-size: 26px; font-weight: 800; letter-spacing: -.02em; color: var(--hr-ink); text-decoration: none; }
@@ -1132,11 +1110,9 @@ body.ss-sheet-on { overflow: hidden; }
 	.hr-footer-right .hr-footer-menu, .hr-footer-right .hr-footer-info { justify-content: flex-start; }
 }
 
-/* 카테고리 타일 아이콘 (레이아웃 설정 cat_icons) */
 .ssh-tile-mark.has-img { background: transparent; overflow: hidden; }
 .ssh-tile-mark.has-img img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; }
 
-/* 전체 카테고리 패널: 1차 카테고리 수에 따라 열 확장 (3 → 4 → 5) */
 .ss-catall-panel.ss-cols-4 { width: min(960px, calc(100vw - 40px)); }
 .ss-catall-panel.ss-cols-5 { width: min(1140px, calc(100vw - 40px)); }
 .ss-catall-list.ss-cols-4 { grid-template-columns: repeat(4, 1fr); }
@@ -1148,3 +1124,13 @@ body.ss-sheet-on { overflow: hidden; }
 @media (max-width: 860px) {
 	.ss-catall-list.ss-cols-4, .ss-catall-list.ss-cols-5 { grid-template-columns: repeat(2, 1fr); }
 }
+
+.ss-catbar-inner { min-width: 0; }
+.ss-catbar-inner > .ss-cats, .ss-catbar-inner > .ss-gnb { min-width: 0; }
+.ss-catbar-inner > .ss-gnb.is-side { flex: 0 1000 auto; }
+.ss-catbar-inner .ss-cats > ul, .ss-catbar-inner .ss-gnb > ul { min-width: 0; }
+.ss-catbar-inner .ss-cats > ul > li, .ss-catbar-inner .ss-gnb > ul > li { flex: none; white-space: nowrap; }
+.ss-more-btn { display: flex; align-items: center; height: 100%; padding: 0 2px; border: 0; background: none; color: inherit; cursor: pointer; }
+.ss-more-btn svg { width: 18px; height: 18px; fill: currentColor; }
+.ss-more > .ss-more-sub { left: auto; right: 0; }
+.ss-more-sub ul { display: none; }

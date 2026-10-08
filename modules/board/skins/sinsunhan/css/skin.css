@@ -141,7 +141,7 @@
 	font-weight: 700;
 	vertical-align: 1px;
 }
-.hrb-cat:hover { background: var(--hr-brand); color: #fff; }
+.hrb-cat:hover { background: var(--hr-brand); color: var(--hr-on-brand, #fff); }
 .hrb-cmt { margin-left: 5px; font-style: normal; font-size: 12.5px; font-weight: 700; color: var(--hr-brand); }
 .hrb-ico { width: 14px; height: 14px; fill: var(--hr-muted); vertical-align: -2px; }
 .hrb-ico-file { margin-left: 5px; }
@@ -186,7 +186,7 @@
 .hrb-faq summary { display: flex; align-items: center; gap: 9px; padding: 15px 6px; cursor: pointer; font-size: 15px; font-weight: 600; list-style: none; }
 .hrb-faq summary::-webkit-details-marker { display: none; }
 .hrb-faq summary:hover .hrb-faq-title { color: var(--hr-brand); }
-.hrb-faq-q { flex: none; width: 22px; height: 22px; line-height: 22px; border-radius: 6px; background: var(--hr-brand); color: #fff; font-size: 12px; font-weight: 800; text-align: center; }
+.hrb-faq-q { flex: none; width: 22px; height: 22px; line-height: 22px; border-radius: 6px; background: var(--hr-brand); color: var(--hr-on-brand, #fff); font-size: 12px; font-weight: 800; text-align: center; }
 .hrb-faq-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hrb-faq-arrow { flex: none; width: 18px; height: 18px; margin-left: auto; fill: var(--hr-muted); transition: transform .16s; }
 .hrb-faq details[open] .hrb-faq-arrow { transform: rotate(180deg); }
@@ -229,14 +229,14 @@
 	padding: 4px 11px;
 	border-radius: var(--hr-radius-pill);
 	background: var(--hr-brand);
-	color: #fff;
+	color: var(--hr-on-brand, #fff);
 	font-size: 12px;
 	font-weight: 700;
 	line-height: 1.5;
 	vertical-align: 4px;
 }
 .hrb-read-title .hrb-read-badge.is-cat { background: var(--hr-brand-soft); color: var(--hr-brand); }
-.hrb-read-title a.hrb-read-badge:hover { background: var(--hr-brand-dark); color: #fff; }
+.hrb-read-title a.hrb-read-badge:hover { background: var(--hr-brand-dark); color: var(--hr-on-brand-dark, #fff); }
 .hrb-read-meta {
 	display: flex;
 	flex-wrap: wrap;
@@ -335,7 +335,7 @@
 .hrb-vote-btn.is-up.is-voted {
 	border-color: var(--hr-brand-dark);
 	background: linear-gradient(var(--hr-brand-light), var(--hr-brand));
-	color: #fff;
+	color: var(--hr-on-brand, #fff);
 }
 .hrb-vote-btn.is-up.is-voted b { color: #fff; }
 .hrb-vote-btn.is-down.is-voted { border-color: var(--hr-danger); background: var(--hr-danger); color: #fff; }
@@ -491,7 +491,7 @@
 .hrb input.hr-btn-primary {
 	background: var(--hr-btn-strong);
 	border-color: var(--hr-btn-strong);
-	color: #fff;
+	color: var(--hr-on-strong, #fff);
 	font-weight: 700;
 }
 .hrb .hr-btn-primary:hover,
@@ -500,9 +500,9 @@
 .hrb input.hr-btn-primary:hover {
 	background: var(--hr-btn-strong-hover);
 	border-color: var(--hr-btn-strong-hover);
-	color: #fff;
+	color: var(--hr-on-strong-hover, #fff);
 }
-[data-theme="dark"] .hrb .hr-btn-primary { color: #fff; }
+[data-theme="dark"] .hrb .hr-btn-primary { color: var(--hr-on-strong, #fff); }
 [data-theme="dark"] .hrb-confirm-target,
 [data-theme="dark"] .hrb-notice-text { border-top-color: #3d4557; }
 @media (max-width: 768px) {

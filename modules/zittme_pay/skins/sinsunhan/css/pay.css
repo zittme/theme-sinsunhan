@@ -253,7 +253,7 @@ a.zpay-btn-primary:link,
 a.zpay-btn-primary:visited,
 a.zpay-btn-primary:hover {
 	background: var(--zpay-point);
-	color: #fff !important;
+	color: var(--hr-on-brand, #fff) !important;
 }
 
 .zpay-btn-primary:hover {
@@ -318,12 +318,12 @@ a.zpay-btn-primary:hover {
 a.zpay-btn-primary,
 a.zpay-btn-primary:link,
 a.zpay-btn-primary:visited {
-	background: linear-gradient(var(--zpay-point-light), var(--zpay-point));
+	background: linear-gradient(var(--zpay-point), var(--zpay-point-dark));
 	text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
 }
 .zpay-btn-primary:hover, a.zpay-btn-primary:hover {
 	filter: none;
-	background: linear-gradient(var(--zpay-point), var(--zpay-point-dark));
+	background: var(--zpay-point-dark); color: var(--hr-on-brand, #fff);
 }
 
 :is([data-theme="dark"], body.color_scheme_dark) .zpay {

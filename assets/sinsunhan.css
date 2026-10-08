@@ -8,7 +8,7 @@
 	--hr-brand-soft: rgba(31, 107, 74, .09);
 	--hr-ink: #16201b;
 	--hr-ink-sub: #4c5a52;
-	--hr-muted: #8b968f;
+	--hr-muted: #636d67;
 	--hr-line: #e4e6e0;
 	--hr-line-soft: #eff0ea;
 	--hr-bg: #ffffff;
@@ -47,6 +47,27 @@
 	--hr-brand: #5fbf90;
 	--hr-brand-dark: #4aa87a;
 	--hr-brand-light: #8ad6b1;
+}
+:root {
+	--hr-on-brand: #fff;
+	--hr-on-brand-dark: #fff;
+	--hr-on-strong: #fff;
+	--hr-on-strong-hover: #fff;
+	--hr-on-danger: #fff;
+	--hr-brand-text: var(--hr-brand);
+	--hr-tl-min: 0;
+	--hr-tl-max: .48;
+}
+[data-theme="dark"] { --hr-tl-min: .76; --hr-tl-max: 1; }
+@supports (color: color(from red srgb-linear r g b)) {
+	:root {
+		--hr-on-brand: color(from var(--hr-brand) srgb-linear clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1) clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1) clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1));
+		--hr-on-brand-dark: color(from var(--hr-brand-dark) srgb-linear clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1) clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1) clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1));
+		--hr-on-strong: color(from var(--hr-btn-strong) srgb-linear clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1) clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1) clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1));
+		--hr-on-strong-hover: color(from var(--hr-btn-strong-hover) srgb-linear clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1) clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1) clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1));
+		--hr-on-danger: color(from var(--hr-danger) srgb-linear clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1) clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1) clamp(.004, (.179 - (.2126 * r + .7152 * g + .0722 * b)) * 100000, 1));
+		--hr-brand-text: oklch(from var(--hr-brand) clamp(var(--hr-tl-min), l, var(--hr-tl-max)) c h);
+	}
 }
 
 .hr {
@@ -111,12 +132,12 @@ html, .hr *, .hr-mobile * {
 .hr a.hr-btn-primary {
 	background: var(--hr-btn-strong);
 	border-color: var(--hr-btn-strong);
-	color: #fff;
+	color: var(--hr-on-strong, #fff);
 }
 .hr-btn-primary:hover {
 	background: var(--hr-btn-strong-hover);
 	border-color: var(--hr-btn-strong-hover);
-	color: #fff;
+	color: var(--hr-on-strong-hover, #fff);
 }
 .hr-btn-sm { padding: 6px 12px; font-size: 12.5px; }
 .hr-btn-lg { padding: 12px 24px; font-size: 15px; }
@@ -135,7 +156,7 @@ html, .hr *, .hr-mobile * {
 	font-weight: 600;
 }
 .hr-chip:hover { border-color: var(--hr-brand); color: var(--hr-brand); }
-.hr-chip.is-on { background: var(--hr-brand); border-color: var(--hr-brand); color: #fff; }
+.hr-chip.is-on { background: var(--hr-brand); border-color: var(--hr-brand); color: var(--hr-on-brand, #fff); }
 .hr-badge {
 	display: inline-block;
 	padding: 3px 9px;

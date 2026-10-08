@@ -93,10 +93,10 @@
     text-decoration: none; text-shadow: none; cursor: pointer; transition: background-color .15s, color .15s, border-color .15s;
 }
 .xm .btn:hover { color: var(--zm-brand); border-color: var(--zm-brand); background: var(--zm-bg); }
-.xm .btn-primary, .xm input[type="submit"].btn, .xm button[type="submit"].btn { background: var(--zm-brand); border-color: var(--zm-brand); color: #fff; }
+.xm .btn-primary, .xm input[type="submit"].btn, .xm button[type="submit"].btn { background: var(--zm-brand); border-color: var(--zm-brand); color: var(--hr-on-brand, #fff); }
 .xm .btn-primary:hover, .xm input[type="submit"].btn:hover, .xm button[type="submit"].btn:hover { background: var(--zm-brand-hover); color: #fff; border-color: var(--zm-brand-hover); }
 .xm .btn-inverse { background: var(--zm-text); border-color: var(--zm-text); color: var(--zm-bg); }
-.xm .btn-inverse:hover { background: var(--zm-brand); border-color: var(--zm-brand); color: #fff; }
+.xm .btn-inverse:hover { background: var(--zm-brand); border-color: var(--zm-brand); color: var(--hr-on-brand, #fff); }
 .xm .btnArea { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin: 0 0 16px; }
 /* 코어의 float clearfix(.btnArea::after)는 flex 에서 빈 아이템이 되어 앞자리와 gap 을 하나 더 만든다 */
 .xm .btnArea::before, .xm .btnArea::after { display: none; }
@@ -143,7 +143,7 @@
     margin: 0 1px; border-radius: 8px; font-size: 14px; color: var(--zm-text-sub); text-decoration: none; border: 0; background: transparent;
 }
 .xm .pagination a:hover { background: var(--zm-brand-soft); color: var(--zm-brand); }
-.xm .pagination strong, .xm .pagination .active { background: var(--zm-brand); color: #fff; font-weight: 700; }
+.xm .pagination strong, .xm .pagination .active { background: var(--zm-brand); color: var(--hr-on-brand, #fff); font-weight: 700; }
 
 .xm .x_label { display: inline-block; padding: 2px 8px; font-size: 12px; font-weight: 700; border-radius: 999px; color: var(--zm-brand); background: var(--zm-brand-soft); }
 .xm .x_label-important { color: #fff; background: var(--zm-danger); }
@@ -193,7 +193,7 @@
 .xm .pagination ul li { margin: 0; }
 .xm .pagination ul li a { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 32px; padding: 0 8px; box-sizing: border-box; border-radius: 8px; font-size: 13.5px; color: var(--zm-text-sub); text-decoration: none; white-space: nowrap; }
 .xm .pagination ul li a:hover { background: var(--zm-brand-soft); color: var(--zm-brand); }
-.xm .pagination ul li.active a { background: var(--zm-brand); color: #fff; font-weight: 700; }
+.xm .pagination ul li.active a { background: var(--zm-brand); color: var(--hr-on-brand, #fff); font-weight: 700; }
 
 .xm .btnArea select { width: auto; margin-bottom: 0; }
 .xm .btnArea input[type="text"] { width: 180px; margin-bottom: 0; }
@@ -216,7 +216,7 @@
     color: var(--zm-brand); background: var(--zm-brand-soft); border: 1px solid transparent; border-radius: 8px;
     cursor: pointer; transition: background-color .15s;
 }
-.xm input[type="file"]::file-selector-button:hover { background: var(--zm-brand); color: #fff; }
+.xm input[type="file"]::file-selector-button:hover { background: var(--zm-brand); color: var(--hr-on-brand, #fff); }
 
 .xm .table caption { caption-side: top; padding: 6px 0 10px; text-align: right; font-size: 12.5px; color: var(--zm-text-sub); }
 
@@ -270,7 +270,7 @@
 .zmy-wrap { display: flex; gap: 40px; align-items: flex-start; }
 .zmy-side { flex: 0 0 224px; position: sticky; top: 90px; }
 .zmy-profile { display: flex; flex-direction: column; gap: 3px; padding: 2px 8px 18px; border-bottom: 1px solid var(--zm-border); margin-bottom: 14px; }
-.zmy-avatar { width: 56px; height: 56px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, var(--zm-brand), var(--zm-brand-light)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 22px; margin-bottom: 9px; }
+.zmy-avatar { width: 56px; height: 56px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, var(--zm-brand), var(--zm-brand-light)); display: flex; align-items: center; justify-content: center; color: var(--hr-on-brand, #fff); font-weight: 800; font-size: 22px; margin-bottom: 9px; }
 .zmy-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .zmy-avatar em { font-style: normal; }
 .zmy-nick { font-size: 16px; font-weight: 800; }
@@ -328,14 +328,14 @@
     background: linear-gradient(var(--zm-brand-light), var(--zm-brand));
     border-color: var(--zm-brand-hover);
     border-bottom-color: var(--zm-brand-hover);
-    color: #fff;
+    color: var(--hr-on-brand, #fff);
     text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
 }
 .xm .btn-primary:hover, .xm a.btn-primary:hover, .xm button.btn-primary:hover, .xm input.btn-primary:hover,
 .xm input[type="submit"].btn:hover, .xm button[type="submit"].btn:hover {
     background: linear-gradient(var(--zm-brand), var(--zm-brand-hover));
     border-color: var(--zm-brand-hover);
-    color: #fff;
+    color: var(--hr-on-brand, #fff);
 }
 .xm .btn-inverse { background: var(--zm-text); border-color: var(--zm-text); color: var(--zm-bg); }
 .xm select, .xm textarea,
@@ -421,7 +421,7 @@
 
 .xm .zm-signup-steps { display: flex; gap: 6px; margin: 8px 0 18px; }
 .xm .zm-signup-steps span { flex: 1; text-align: center; padding: 9px 4px; font-size: 12.5px; border-radius: var(--zm-radius); background: var(--zm-surface); color: var(--zm-text-sub); }
-.xm .zm-signup-steps span.on { background: var(--zm-brand); color: #fff; font-weight: 700; }
+.xm .zm-signup-steps span.on { background: var(--zm-brand); color: var(--hr-on-brand, #fff); font-weight: 700; }
 .xm .xpress-editor > #smart_content,
 .xm .xpress-editor > #smart_content > .tool { clear: none; }
 .xm .zm-signup-steps span.done { background: var(--zm-brand-soft); color: var(--zm-brand); }
@@ -459,7 +459,7 @@
 .xm .signin .login-body input[type="submit"].submit {
 	width: 100%; max-width: none; height: 54px !important; padding: 0;
 	border: 0; border-radius: 12px;
-	background: var(--zm-brand); color: #fff;
+	background: var(--zm-brand); color: var(--hr-on-brand, #fff);
 	font-size: 16px; font-weight: 700; letter-spacing: -.02em;
 	cursor: pointer; transition: background .15s;
 }
@@ -483,7 +483,7 @@
 	flex: 1; padding: 11px 6px; border-radius: 10px; background: var(--zm-surface);
 	font-size: 12.5px; font-weight: 600; color: var(--zm-text-sub); text-align: center;
 }
-.xm .zm-signup-steps span.on { background: var(--zm-brand); color: #fff; }
+.xm .zm-signup-steps span.on { background: var(--zm-brand); color: var(--hr-on-brand, #fff); }
 .xm .zm-signup-steps span.done { background: var(--zm-brand-soft); color: var(--zm-brand); }
 
 .xm .agreement { border: 0; border-radius: 12px; background: var(--zm-surface); }
@@ -500,7 +500,7 @@
 .xm #fo_insert_member .btnArea input[type="submit"],
 .xm #fo_insert_member .btnArea button[type="submit"] {
 	width: auto; height: 54px !important; border: 0; border-radius: 12px;
-	background: var(--zm-brand); color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
+	background: var(--zm-brand); color: var(--hr-on-brand, #fff); font-size: 16px; font-weight: 700; cursor: pointer;
 }
 
 @media (max-width: 768px) {

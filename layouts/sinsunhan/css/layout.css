@@ -253,7 +253,7 @@ html, body { margin: 0; background: var(--hr-bg); }
 body.hr-mobile-on { overflow: hidden; }
 .hr-mobile-account { display: flex; gap: 8px; padding: 12px 16px; }
 .hr-mobile-account-btn { flex: 1; padding: 10px 8px; border: 1px solid var(--hr-line); border-radius: var(--hr-radius-btn); text-align: center; font-size: 13.5px; font-weight: 700; color: var(--hr-nav-fg-on); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.hr-mobile-account-btn.is-primary { background: var(--hr-brand); border-color: var(--hr-brand); color: #fff; }
+.hr-mobile-account-btn.is-primary { background: var(--hr-brand); border-color: var(--hr-brand); color: var(--hr-on-brand, #fff); }
 .hr-mobile-list > li { position: relative; border-top: 1px solid var(--hr-line-soft); }
 .hr-mobile-list > li > a { display: block; padding: 15px clamp(16px, 4vw, 32px); font-size: 15.5px; font-weight: 700; color: var(--hr-nav-fg-on); }
 .hr-mobile-list > li.is-on > a { color: var(--hr-brand); }
@@ -517,7 +517,7 @@ body.hr-mobile-on { overflow: hidden; }
 	font-weight: 700;
 	letter-spacing: -.01em;
 	background: linear-gradient(180deg, var(--hr-brand-light), var(--hr-brand));
-	color: #fff;
+	color: var(--hr-on-brand, #fff);
 	border: 0;
 	box-shadow: 0 8px 24px color-mix(in srgb, var(--hr-brand) 38%, transparent), inset 0 1px 0 rgba(255, 255, 255, .25);
 	transition: transform .16s ease, box-shadow .16s ease;
@@ -682,7 +682,7 @@ body.hr-mobile-on { overflow: hidden; }
 	padding: 0 4px;
 	border-radius: var(--hr-radius-pill);
 	background: var(--hr-brand);
-	color: #fff;
+	color: var(--hr-on-brand, #fff);
 	font-size: 10.5px;
 	font-weight: 800;
 	font-style: normal;
@@ -868,9 +868,9 @@ body.hr-mobile-on { overflow: hidden; }
 .ssh-badge {
 	font-style: normal; font-size: 11px; font-weight: 700; line-height: 1;
 	padding: 5px 8px; border-radius: var(--hr-radius-pill);
-	background: var(--hr-brand); color: #fff;
+	background: var(--hr-brand); color: var(--hr-on-brand, #fff);
 }
-.ssh-badge.is-new { background: #1d6fd6; }
+.ssh-badge.is-new { background: #1d6fd6; color: #fff; }
 .ssh-soldout {
 	position: absolute; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center;
 	background: rgba(20, 24, 21, .55); color: #fff; font-weight: 800; font-size: 15px; letter-spacing: .06em;
@@ -908,15 +908,15 @@ body.hr-mobile-on { overflow: hidden; }
 	padding: 30px 34px; border-radius: var(--hr-radius);
 	background: linear-gradient(115deg, var(--hr-brand) 0%, var(--hr-brand-dark) 100%);
 }
-.ssh-daily-copy { flex: 0 0 240px; display: flex; flex-direction: column; justify-content: center; gap: 8px; color: #fff; }
+.ssh-daily-copy { flex: 0 0 240px; display: flex; flex-direction: column; justify-content: center; gap: 8px; color: var(--hr-on-brand, #fff); }
 .ssh-daily-flag {
 	align-self: flex-start; font-style: normal; font-size: 12px; font-weight: 800; letter-spacing: .08em;
 	padding: 5px 11px; border-radius: var(--hr-radius-pill);
-	background: rgba(255, 255, 255, .18); color: #fff;
+	background: rgba(255, 255, 255, .18); color: inherit;
 }
-.ssh-daily-copy h2 { margin: 2px 0 0; font-size: 26px; font-weight: 800; letter-spacing: -.02em; line-height: 1.3; color: #fff; }
-.ssh-daily-copy p { margin: 0; font-size: 13.5px; color: rgba(255, 255, 255, .8); }
-.ssh-daily-timer { margin-top: 8px; font-size: 34px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: .04em; color: #fff; }
+.ssh-daily-copy h2 { margin: 2px 0 0; font-size: 26px; font-weight: 800; letter-spacing: -.02em; line-height: 1.3; color: inherit; }
+.ssh-daily-copy p { margin: 0; font-size: 13.5px; color: inherit; opacity: .85; }
+.ssh-daily-timer { margin-top: 8px; font-size: 34px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: .04em; color: inherit; }
 .ssh-daily-item {
 	flex: 1; display: flex; gap: 22px; align-items: center;
 	padding: 18px 22px; border-radius: var(--hr-radius-sm);
@@ -1099,7 +1099,7 @@ body.ss-sheet-on { overflow: hidden; }
 	background: var(--hr-line-soft); color: var(--hr-ink-sub);
 	transition: background-color .15s, color .15s;
 }
-.hr-footer-sns a:hover { background: var(--hr-brand); color: #fff; }
+.hr-footer-sns a:hover { background: var(--hr-brand); color: var(--hr-on-brand, #fff); }
 .hr-footer-sns svg { width: 17px; height: 17px; fill: currentColor; }
 .hr-footer-disclaimer { margin: 20px 0 0; padding-top: 14px; border-top: 1px solid var(--hr-line); font-size: 12px; line-height: 1.7; color: var(--hr-muted); }
 

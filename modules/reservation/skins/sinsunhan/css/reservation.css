@@ -42,7 +42,7 @@
 .rsv-cal-day.is-out { color: #c3c9d2; }
 .rsv-cal-day.is-avail { cursor: pointer; background: var(--rsv-brand-soft); font-weight: 600; color: var(--rsv-brand); }
 .rsv-cal-day.is-avail:hover { border-color: var(--rsv-brand); }
-.rsv-cal-day.is-selected { background: var(--rsv-brand); color: #fff; }
+.rsv-cal-day.is-selected { background: var(--rsv-brand); color: var(--hr-on-brand, #fff); }
 .rsv-cal-day .rsv-dot { position: absolute; bottom: 6px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
 
 .rsv-times-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
@@ -70,7 +70,7 @@
 
 .rsv-actions { margin-top: 20px; }
 .rsv-btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 13px 20px; border: 1px solid transparent; border-radius: 11px; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; transition: filter .15s; }
-.rsv-btn-primary { background: var(--rsv-brand); color: #fff; }
+.rsv-btn-primary { background: var(--rsv-brand); color: var(--hr-on-brand, #fff); }
 .rsv-btn-primary:hover { filter: brightness(1.06); }
 .rsv-btn-ghost { background: var(--rsv-card); border-color: var(--rsv-border); color: var(--rsv-sub); }
 .rsv-btn-ghost:hover { border-color: #e5484d; color: #e5484d; }

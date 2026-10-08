@@ -102,7 +102,7 @@ body { background: var(--zm-surface); }
 #access .submit {
 	background: var(--zm-brand);
 	border-color: var(--zm-brand);
-	color: #fff;
+	color: var(--hr-on-brand, #fff);
 	font-weight: 700;
 }
 #access .btn.btn-inverse:hover,

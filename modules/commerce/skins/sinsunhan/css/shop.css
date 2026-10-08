@@ -12,7 +12,7 @@
 .shp-cart-link { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--shp-sub); }
 .shp-cart-link:hover { color: var(--shp-brand); }
 .shp-cart-link svg { width: 18px; height: 18px; fill: currentColor; }
-.shp-cart-count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--shp-brand); color: #fff; font-size: 11px; font-weight: 700; }
+.shp-cart-count { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--shp-brand); color: var(--hr-on-brand, #fff); font-size: 11px; font-weight: 700; }
 
 .shp-filter { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
 .shp-filter select, .shp-filter input { padding: 8px 10px; border: 1px solid var(--shp-border); border-radius: 9px; font-size: 13px; font-family: inherit; background: var(--shp-card); }
@@ -50,7 +50,7 @@
 .shp-qty { width: 110px !important; }
 .shp-actions { display: flex; gap: 10px; margin-top: 16px; }
 .shp-btn { display: inline-flex; align-items: center; justify-content: center; padding: 13px 22px; border: 1px solid transparent; border-radius: 11px; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; flex: 1; }
-.shp-btn-primary { background: var(--shp-brand); color: #fff; }
+.shp-btn-primary { background: var(--shp-brand); color: var(--hr-on-brand, #fff); }
 .shp-btn-primary:hover { filter: brightness(1.06); }
 .shp-btn-ghost { background: var(--shp-card); border-color: var(--shp-border); color: var(--shp-text); }
 .shp-btn-ghost:hover { border-color: var(--shp-brand); color: var(--shp-brand); }
@@ -534,7 +534,7 @@ html { scroll-behavior: smooth; }
 	border: 0;
 	border-radius: 999px;
 	background: var(--shp-brand);
-	color: #fff;
+	color: var(--hr-on-brand, #fff);
 	font-size: 16px;
 	font-weight: 800;
 	letter-spacing: -.01em;
@@ -601,7 +601,7 @@ html { scroll-behavior: smooth; }
 .shp-cat.is-on {
 	border-color: var(--shp-brand);
 	background: var(--shp-brand);
-	color: #fff;
+	color: var(--hr-on-brand, #fff);
 }
 .shp-cats-sub { margin-top: -4px; margin-bottom: 16px; padding-left: 2px; }
 .shp-cats-sub .shp-cat { padding: 6px 13px; font-size: 13px; border-radius: 8px; }
@@ -738,7 +738,7 @@ html { scroll-behavior: smooth; }
 .shp-card .shp-badges { position: absolute; top: 10px; left: 10px; z-index: 2; flex-direction: column; align-items: flex-start; gap: 5px; }
 .shp-badge {
 	padding: 4px 9px; border-radius: var(--hr-radius-btn, 8px);
-	background: var(--shp-brand); color: #fff;
+	background: var(--shp-brand); color: var(--hr-on-brand, #fff);
 	font-size: 11px; font-weight: 700; letter-spacing: -.01em;
 	box-shadow: 0 2px 8px -3px rgba(22, 32, 27, .5);
 }
@@ -759,7 +759,7 @@ html { scroll-behavior: smooth; }
 	font-size: 13.5px; font-weight: 600; color: var(--shp-sub); background: var(--shp-card);
 }
 .shp-cats a:hover { border-color: var(--shp-brand); color: var(--shp-brand); }
-.shp-cats a.is-on { border-color: var(--shp-brand); background: var(--shp-brand); color: #fff; }
+.shp-cats a.is-on { border-color: var(--shp-brand); background: var(--shp-brand); color: var(--hr-on-brand, #fff); }
 
 .shp-sec-head { display: flex; align-items: baseline; gap: 12px; margin: 44px 0 20px; }
 .shp-sec-head h2 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -.03em; }
@@ -960,7 +960,7 @@ html { scroll-behavior: smooth; }
 
 .shp-my-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
 .shp-my-filter button { padding: 6px 12px; border: 1px solid var(--shp-border, #e4e6e0); border-radius: 999px; background: var(--shp-card, #fff); font-size: 13px; color: var(--shp-text, #222); cursor: pointer; }
-.shp-my-filter button.is-on { border-color: var(--shp-brand); background: var(--shp-brand); color: #fff; }
+.shp-my-filter button.is-on { border-color: var(--shp-brand); background: var(--shp-brand); color: var(--hr-on-brand, #fff); }
 .shp-my-filter button small { margin-left: 4px; opacity: .75; }
 
 .shp-promo-card.align-center { justify-content: center; }

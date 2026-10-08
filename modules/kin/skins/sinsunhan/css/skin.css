@@ -34,7 +34,7 @@
 .zmk .zmk-btn, .zmk a.zmk-btn, .zmk a.zmk-btn:visited { display: inline-block; padding: 7px 14px; border: 1px solid var(--zmk-border); border-radius: 6px; background: var(--zmk-bg); color: var(--zmk-text); font-size: 15px; font-weight: 500; cursor: pointer; line-height: 1.4; text-decoration: none; transition: background-color .15s, color .15s, border-color .15s; }
 .zmk .zmk-btn:hover, .zmk a.zmk-btn:hover { background: var(--zmk-surface); color: var(--zmk-text); text-decoration: none; }
 .zmk .zmk-btn-sm { padding: 4px 10px; font-size: 14px; }
-.zmk .zmk-btn-primary, .zmk a.zmk-btn-primary, .zmk a.zmk-btn-primary:visited { background: var(--zmk-brand); border-color: var(--zmk-brand); color: #fff; }
+.zmk .zmk-btn-primary, .zmk a.zmk-btn-primary, .zmk a.zmk-btn-primary:visited { background: var(--zmk-brand); border-color: var(--zmk-brand); color: var(--hr-on-brand, #fff); }
 .zmk .zmk-btn-primary:hover, .zmk a.zmk-btn-primary:hover { background: var(--zmk-brand-hover); border-color: var(--zmk-brand-hover); color: #fff; }
 .zmk .zmk-btn-danger, .zmk a.zmk-btn-danger, .zmk a.zmk-btn-danger:visited { border-color: var(--zmk-danger); color: var(--zmk-danger); background: var(--zmk-bg); }
 .zmk .zmk-btn-danger:hover, .zmk a.zmk-btn-danger:hover { background: var(--zmk-danger-soft); color: var(--zmk-danger); }
@@ -51,7 +51,7 @@
 .zmk-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 12px; flex-wrap: wrap; }
 .zmk-tabs { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
 .zmk-tabs li a { display: inline-block; padding: 7px 14px; border-radius: 6px; font-size: 15px; color: var(--zmk-text-sub); }
-.zmk-tabs li.is-active a { background: var(--zmk-brand); color: #fff; }
+.zmk-tabs li.is-active a { background: var(--zmk-brand); color: var(--hr-on-brand, #fff); }
 .zmk-tabs li a b { font-weight: 600; }
 
 .zmk ul.zmk-categories { display: flex; gap: 6px; flex-wrap: wrap; list-style: none; margin: 4px 0 28px; padding: 0; }
@@ -107,7 +107,7 @@
 .zmk-paging { display: flex; justify-content: center; gap: 4px; margin: 18px 0; }
 .zmk-paging a { display: inline-block; min-width: 32px; padding: 5px 0; text-align: center; border: 1px solid var(--zmk-border); border-radius: 6px; font-size: 13px; color: var(--zmk-text-sub); }
 .zmk-paging a:hover { background: var(--zmk-brand-soft); color: var(--zmk-brand); text-decoration: none; }
-.zmk-paging a.is-active { background: var(--zmk-brand); border-color: var(--zmk-brand); color: #fff; }
+.zmk-paging a.is-active { background: var(--zmk-brand); border-color: var(--zmk-brand); color: var(--hr-on-brand, #fff); }
 
 .zmk-search { display: flex; justify-content: center; gap: 6px; margin: 16px 0; }
 .zmk-search select, .zmk-search input[type=text] { padding: 6px 10px; border: 1px solid var(--zmk-border); border-radius: 6px; font-size: 15px; background: var(--zmk-bg); color: var(--zmk-text); }

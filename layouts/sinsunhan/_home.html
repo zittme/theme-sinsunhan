@@ -175,7 +175,7 @@ foreach ($hrh_section_rows as $hrh_srow)
 		'stype' => (string)$hrh_srow['stype'],
 		'title' => trim((string)($hrh_srow['title'] ?? '')),
 		'source' => trim((string)($hrh_srow['source'] ?? '')),
-		'count' => max(2, min(12, (int)($hrh_srow['count'] ?? 8))),
+		'count' => max(2, min(12, trim((string)($hrh_srow['count'] ?? '')) !== '' ? (int)$hrh_srow['count'] : ($hrh_srow['stype'] === 'categories' ? 10 : 8))),
 	];
 }
 if (!count($hrh_sections))
